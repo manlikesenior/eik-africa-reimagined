@@ -455,7 +455,7 @@ const Booking = () => {
                       </div>
                       <div>
                         <p className="font-semibold text-foreground">Phone</p>
-                        <p className="text-muted-foreground group-hover:text-primary transition-colors">+254116735102</p>
+                        <p className="text-muted-foreground group-hover:text-primary transition-colors">+254 116 735 102</p>
                       </div>
                     </a>
                     <a 
