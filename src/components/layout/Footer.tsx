@@ -82,20 +82,20 @@ export function Footer() {
               </li>
               <li>
                 <a 
-                  href="tel:+254700000000" 
+                  href="tel:+254116735102" 
                   className="flex items-center gap-3 text-sm text-background/80 hover:text-primary transition-colors"
                 >
                   <Phone className="w-5 h-5 shrink-0 text-primary" />
-                  <span>+254 700 000 000</span>
+                  <span>+254 116 735 102</span>
                 </a>
               </li>
               <li>
                 <a 
-                  href="mailto:reservations@eikafricaexperience.com" 
+                  href="mailto:inquiries@eikafricaexperience.com" 
                   className="flex items-start gap-3 text-sm text-background/80 hover:text-primary transition-colors"
                 >
                   <Mail className="w-5 h-5 shrink-0 text-primary" />
-                  <span>reservations@eikafricaexperience.com</span>
+                  <span>inquiries@eikafricaexperience.com</span>
                 </a>
               </li>
             </ul>
