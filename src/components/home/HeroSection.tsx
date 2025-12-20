@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import heroElephant from "@/assets/hero-elephant.jpg";
 
 export function HeroSection() {
   return (
@@ -8,7 +9,7 @@ export function HeroSection() {
       <div 
         className="absolute inset-0 bg-cover bg-center bg-no-repeat"
         style={{
-          backgroundImage: "url('https://images.unsplash.com/photo-1516426122078-c23e76319801?w=1920&q=80')"
+          backgroundImage: `url('${heroElephant}')`
         }}
       />
       

@@ -441,31 +441,52 @@ const Booking = () => {
 
             {/* Sidebar */}
             <div className="space-y-6">
-              <Card>
-                <CardContent className="p-6 space-y-4">
-                  <h3 className="font-display text-lg font-semibold">Contact Information</h3>
-                  <div className="space-y-3">
+              <Card className="shadow-lg">
+                <CardContent className="p-6 space-y-2">
+                  <h3 className="font-display text-xl font-bold text-foreground">Contact Information</h3>
+                  <p className="text-muted-foreground text-sm">Get in touch with our travel experts</p>
+                  <div className="space-y-5 pt-4">
                     <a 
-                      href="tel:+254700000000" 
-                      className="flex items-center gap-3 text-muted-foreground hover:text-primary transition-colors"
+                      href="tel:+254116735102" 
+                      className="flex items-center gap-4 group"
                     >
-                      <Phone className="w-5 h-5 text-primary" />
-                      <span>+254 700 000 000</span>
+                      <div className="w-10 h-10 bg-primary rounded-full flex items-center justify-center shrink-0">
+                        <Phone className="w-5 h-5 text-primary-foreground" />
+                      </div>
+                      <div>
+                        <p className="font-semibold text-foreground">Phone</p>
+                        <p className="text-muted-foreground group-hover:text-primary transition-colors">+254116735102</p>
+                      </div>
                     </a>
                     <a 
-                      href="mailto:reservations@eikafricaexperience.com" 
-                      className="flex items-start gap-3 text-muted-foreground hover:text-primary transition-colors"
+                      href="mailto:inquiries@eikafricaexperience.com" 
+                      className="flex items-center gap-4 group"
                     >
-                      <Mail className="w-5 h-5 text-primary shrink-0" />
-                      <span>reservations@eikafricaexperience.com</span>
+                      <div className="w-10 h-10 bg-primary rounded-full flex items-center justify-center shrink-0">
+                        <Mail className="w-5 h-5 text-primary-foreground" />
+                      </div>
+                      <div>
+                        <p className="font-semibold text-foreground">Email</p>
+                        <p className="text-muted-foreground group-hover:text-primary transition-colors">inquiries@eikafricaexperience.com</p>
+                      </div>
                     </a>
-                    <div className="flex items-start gap-3 text-muted-foreground">
-                      <MapPin className="w-5 h-5 text-primary shrink-0" />
-                      <span>Nairobi, Kenya</span>
+                    <div className="flex items-center gap-4">
+                      <div className="w-10 h-10 bg-primary rounded-full flex items-center justify-center shrink-0">
+                        <MapPin className="w-5 h-5 text-primary-foreground" />
+                      </div>
+                      <div>
+                        <p className="font-semibold text-foreground">Location</p>
+                        <p className="text-muted-foreground">Nairobi, Kenya</p>
+                      </div>
                     </div>
-                    <div className="flex items-start gap-3 text-muted-foreground">
-                      <Clock className="w-5 h-5 text-primary shrink-0" />
-                      <span>Mon - Sat: 8:00 AM - 6:00 PM</span>
+                    <div className="flex items-center gap-4">
+                      <div className="w-10 h-10 bg-primary rounded-full flex items-center justify-center shrink-0">
+                        <Clock className="w-5 h-5 text-primary-foreground" />
+                      </div>
+                      <div>
+                        <p className="font-semibold text-foreground">Business Hours</p>
+                        <p className="text-muted-foreground">Mon-Fri: 8AM-6PM EAT</p>
+                      </div>
                     </div>
                   </div>
                 </CardContent>
