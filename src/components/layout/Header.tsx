@@ -21,13 +21,13 @@ export function Header() {
       <div className="hidden md:block bg-primary text-primary-foreground">
         <div className="container mx-auto px-4 py-2 flex justify-between items-center text-sm">
           <div className="flex items-center gap-6">
-            <a href="tel:+254700000000" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
+            <a href="tel:+254116735102" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
               <Phone className="w-4 h-4" />
-              <span>+254 700 000 000</span>
+              <span>+254 116 735 102</span>
             </a>
-            <a href="mailto:reservations@eikafricaexperience.com" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
+            <a href="mailto:inquiries@eikafricaexperience.com" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
               <Mail className="w-4 h-4" />
-              <span>reservations@eikafricaexperience.com</span>
+              <span>inquiries@eikafricaexperience.com</span>
             </a>
           </div>
           <div className="flex items-center gap-4">
@@ -40,7 +40,7 @@ export function Header() {
       <nav className="container mx-auto px-4 py-4">
         <div className="flex items-center justify-between">
           <Link to="/" className="flex items-center">
-            <img src={logo} alt="EIK Africa Experience" className="h-12 md:h-16" />
+            <img src={logo} alt="Eika Africa Experience" className="h-12 md:h-16" />
           </Link>
 
           {/* Desktop Navigation */}

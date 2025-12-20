@@ -17,15 +17,16 @@
     --popover: 0 0% 100%;
     --popover-foreground: 0 0% 10%;
 
-    /* Copper/Bronze primary - EIK Brand Color */
-    --primary: 25 65% 45%;
+    /* Amber/Brown primary - Eika Brand Color #92400E */
+    --primary: 32 84% 31%;
     --primary-foreground: 0 0% 100%;
 
-    /* Teal accent */
-    --accent: 174 60% 35%;
+    /* Teal accent #0F766E */
+    --accent: 175 76% 26%;
     --accent-foreground: 0 0% 100%;
 
-    --secondary: 30 30% 96%;
+    /* Dark secondary #111827 */
+    --secondary: 221 39% 11%;
     --secondary-foreground: 0 0% 10%;
 
     --muted: 30 20% 96%;
@@ -64,10 +65,10 @@
     --popover: 0 0% 10%;
     --popover-foreground: 0 0% 95%;
 
-    --primary: 25 65% 50%;
+    --primary: 32 84% 36%;
     --primary-foreground: 0 0% 100%;
 
-    --accent: 174 60% 40%;
+    --accent: 175 76% 30%;
     --accent-foreground: 0 0% 100%;
 
     --secondary: 0 0% 15%;
