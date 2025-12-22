@@ -9,9 +9,9 @@ export function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {/* Logo & About */}
           <div className="space-y-4">
-            <img src={logo} alt="EIK Africa Experience" className="h-16 brightness-0 invert" />
+            <img src={logo} alt="Eika Africa Experience" className="h-16 brightness-0 invert" />
             <p className="text-background/80 text-sm leading-relaxed">
-              EIK Africa Experience is your trusted partner for unforgettable African adventures. 
+              Eika Africa Experience is your trusted partner for unforgettable African adventures. 
               From wildlife safaris to beach getaways, we create memories that last a lifetime.
             </p>
             <div className="flex gap-4">
@@ -103,7 +103,7 @@ export function Footer() {
         </div>
 
         <div className="mt-12 pt-8 border-t border-background/20 text-center text-sm text-background/60">
-          <p>&copy; {new Date().getFullYear()} EIK Africa Experience. All rights reserved.</p>
+          <p>&copy; {new Date().getFullYear()} Eika Africa Experience. All rights reserved.</p>
         </div>
       </div>
     </footer>
