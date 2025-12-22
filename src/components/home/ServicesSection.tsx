@@ -18,25 +18,34 @@ import visa3 from "@/assets/services/visa-3.jpg";
 import corporate1 from "@/assets/services/corporate-1.jpg";
 import corporate2 from "@/assets/services/corporate-2.jpg";
 import corporate3 from "@/assets/services/corporate-3.jpg";
+import hotel1 from "@/assets/services/hotel-1.jpg";
+import hotel2 from "@/assets/services/hotel-2.jpg";
+import hotel3 from "@/assets/services/hotel-3.jpg";
+import air1 from "@/assets/services/air-1.jpg";
+import air2 from "@/assets/services/air-2.jpg";
+import air3 from "@/assets/services/air-3.png";
+import insurance1 from "@/assets/services/insurance-1.jpg";
+import insurance2 from "@/assets/services/insurance-2.jpg";
+import insurance3 from "@/assets/services/insurance-3.jpg";
 
 const services = [
   {
     icon: Hotel,
     title: "Hotel Booking",
     description: "Premium accommodations from luxury lodges to boutique hotels across Africa.",
-    images: ["https://images.unsplash.com/photo-1566073771259-6a8506099945?w=600"]
+    images: [hotel1, hotel2, hotel3]
   },
   {
     icon: Plane,
     title: "Air Ticketing",
     description: "Domestic and international flights with competitive rates and flexible options.",
-    images: ["https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=600"]
+    images: [air1, air2, air3]
   },
   {
     icon: Shield,
     title: "Travel Insurance",
     description: "Comprehensive coverage for peace of mind during your travels.",
-    images: ["https://images.unsplash.com/photo-1450101499163-c8848c66ca85?w=600"]
+    images: [insurance1, insurance2, insurance3]
   },
   {
     icon: Briefcase,
