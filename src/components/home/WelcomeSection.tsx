@@ -1,57 +1,50 @@
-import { Link } from "react-router-dom";
-import { Button } from "@/components/ui/button";
+import safariLion from "@/assets/safari-lion.jpg";
 
 export function WelcomeSection() {
   return (
     <section className="py-20 bg-background">
       <div className="container mx-auto px-4">
+        {/* Header */}
+        <div className="text-center mb-16 max-w-4xl mx-auto">
+          <h2 className="font-display text-3xl md:text-4xl lg:text-5xl font-bold text-foreground mb-6">
+            Welcome to Eika Africa Experience
+          </h2>
+          <p className="text-muted-foreground text-lg leading-relaxed">
+            Your trusted gateway to authentic, unforgettable adventures across Africa and beyond. 
+            Founded on a deep passion for showcasing Africa's untamed beauty, vibrant cultures, 
+            and world-class destinations.
+          </p>
+        </div>
+
+        {/* Content Grid */}
         <div className="grid lg:grid-cols-2 gap-12 items-center">
-          {/* Image */}
-          <div className="relative">
-            <img
-              src="https://images.unsplash.com/photo-1547471080-7cc2caa01a7e?w=800"
-              alt="African Safari Experience"
-              className="rounded-lg shadow-2xl w-full h-[500px] object-cover"
-            />
-            <div className="absolute -bottom-6 -right-6 bg-primary text-primary-foreground p-6 rounded-lg shadow-xl hidden md:block">
-              <p className="text-4xl font-display font-bold">10+</p>
-              <p className="text-sm">Years Experience</p>
+          {/* Philosophy */}
+          <div className="space-y-6">
+            <h3 className="font-display text-2xl md:text-3xl font-bold text-foreground">
+              Our Philosophy
+            </h3>
+            <p className="text-muted-foreground leading-relaxed text-lg">
+              Travel is not just about seeing new places - it's about experiencing them with your soul. 
+              At Eika Africa Experience, we believe in immersive travel where every journey is a connection 
+              to the culture, people, and landscapes that make Africa so unique.
+            </p>
+            
+            {/* Quote */}
+            <div className="border-l-4 border-primary pl-6 py-2 bg-primary/5">
+              <p className="text-primary font-medium italic text-lg">
+                "Your Home to Unforgettable African Journeys"
+              </p>
+              <p className="text-muted-foreground text-sm mt-1">- Our Motto</p>
             </div>
           </div>
 
-          {/* Content */}
-          <div className="space-y-6">
-            <p className="text-primary font-medium tracking-wider uppercase">
-              About EIK Africa Experience
-            </p>
-            <h2 className="font-display text-3xl md:text-4xl font-bold text-foreground">
-              Your Gateway to Authentic African Adventures
-            </h2>
-            <p className="text-muted-foreground leading-relaxed">
-              At EIK Africa Experience, we believe that travel is more than just visiting new places—it's 
-              about creating lasting memories and connecting with the heart of Africa. Our team of 
-              passionate travel experts combines local knowledge with personalized service to craft 
-              journeys that exceed expectations.
-            </p>
-            <p className="text-muted-foreground leading-relaxed">
-              From the majestic plains of the Maasai Mara to the pristine beaches of the Kenyan coast, 
-              we specialize in creating tailor-made experiences that showcase the best of East Africa. 
-              Whether you're seeking thrilling wildlife encounters, cultural immersion, or peaceful 
-              beach retreats, we're here to make your African dream a reality.
-            </p>
-            <div className="grid grid-cols-2 gap-6 pt-4">
-              <div className="space-y-2">
-                <p className="text-3xl font-display font-bold text-primary">500+</p>
-                <p className="text-sm text-muted-foreground">Happy Travelers</p>
-              </div>
-              <div className="space-y-2">
-                <p className="text-3xl font-display font-bold text-primary">50+</p>
-                <p className="text-sm text-muted-foreground">Tour Packages</p>
-              </div>
-            </div>
-            <Button size="lg" asChild className="mt-4">
-              <Link to="/about">Learn More About Us</Link>
-            </Button>
+          {/* Image */}
+          <div className="relative">
+            <img
+              src={safariLion}
+              alt="Safari vehicles viewing a lion in the African savanna"
+              className="rounded-xl shadow-2xl w-full h-[400px] md:h-[500px] object-cover"
+            />
           </div>
         </div>
       </div>

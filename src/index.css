@@ -17,9 +17,13 @@
     --popover: 0 0% 100%;
     --popover-foreground: 0 0% 10%;
 
-    /* Copper/Bronze primary - EIK Brand Color */
-    --primary: 25 65% 45%;
+    /* Copper/Bronze primary - EIK Brand Color #92400e */
+    --primary: 30 78% 31%;
     --primary-foreground: 0 0% 100%;
+    
+    /* Footer background #111827 */
+    --footer-bg: 220 26% 12%;
+    --footer-foreground: 0 0% 100%;
 
     /* Teal accent */
     --accent: 174 60% 35%;
@@ -64,8 +68,11 @@
     --popover: 0 0% 10%;
     --popover-foreground: 0 0% 95%;
 
-    --primary: 25 65% 50%;
+    --primary: 30 78% 35%;
     --primary-foreground: 0 0% 100%;
+    
+    --footer-bg: 220 26% 12%;
+    --footer-foreground: 0 0% 100%;
 
     --accent: 174 60% 40%;
     --accent-foreground: 0 0% 100%;
