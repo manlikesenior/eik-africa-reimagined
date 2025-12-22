@@ -1,43 +1,60 @@
 import { Link } from "react-router-dom";
 import { Plane, Hotel, Shield, Briefcase, FileCheck, MapPin } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
+
+import safaris1 from "@/assets/services/safaris-1.jpg";
+import safaris2 from "@/assets/services/safaris-2.jpg";
+import safaris3 from "@/assets/services/safaris-3.jpg";
+import visa1 from "@/assets/services/visa-1.jpg";
+import visa2 from "@/assets/services/visa-2.jpg";
+import visa3 from "@/assets/services/visa-3.jpg";
+import corporate1 from "@/assets/services/corporate-1.jpg";
+import corporate2 from "@/assets/services/corporate-2.jpg";
+import corporate3 from "@/assets/services/corporate-3.jpg";
 
 const services = [
   {
     icon: Hotel,
     title: "Hotel Booking",
     description: "Premium accommodations from luxury lodges to boutique hotels across Africa.",
-    image: "https://images.unsplash.com/photo-1566073771259-6a8506099945?w=600"
+    images: ["https://images.unsplash.com/photo-1566073771259-6a8506099945?w=600"]
   },
   {
     icon: Plane,
     title: "Air Ticketing",
     description: "Domestic and international flights with competitive rates and flexible options.",
-    image: "https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=600"
+    images: ["https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=600"]
   },
   {
     icon: Shield,
     title: "Travel Insurance",
     description: "Comprehensive coverage for peace of mind during your travels.",
-    image: "https://images.unsplash.com/photo-1450101499163-c8848c66ca85?w=600"
+    images: ["https://images.unsplash.com/photo-1450101499163-c8848c66ca85?w=600"]
   },
   {
     icon: Briefcase,
-    title: "Corporate Travel",
+    title: "Corporate Travel & Group Bookings",
     description: "Tailored business travel solutions for companies of all sizes.",
-    image: "https://images.unsplash.com/photo-1521791136064-7986c2920216?w=600"
+    images: [corporate1, corporate2, corporate3]
   },
   {
     icon: FileCheck,
-    title: "Visa Assistance",
+    title: "Visa Consultancy & Assistance",
     description: "Expert guidance through visa applications and documentation.",
-    image: "https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?w=600"
+    images: [visa1, visa2, visa3]
   },
   {
     icon: MapPin,
-    title: "Safari Tours",
+    title: "Inbound & Outbound Safaris",
     description: "Unforgettable wildlife experiences in Kenya's premier national parks.",
-    image: "https://images.unsplash.com/photo-1523805009345-7448845a9e53?w=600"
+    images: [safaris1, safaris2, safaris3]
   }
 ];
 
@@ -61,13 +78,31 @@ export function ServicesSection() {
               className="group overflow-hidden border-0 shadow-lg hover:shadow-xl transition-all duration-300"
             >
               <div className="relative h-48 overflow-hidden">
-                <img 
-                  src={service.image} 
-                  alt={service.title}
-                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                />
-                <div className="absolute inset-0 bg-black/40 group-hover:bg-black/50 transition-colors" />
-                <div className="absolute inset-0 flex items-center justify-center">
+                {service.images.length > 1 ? (
+                  <Carousel className="w-full h-full">
+                    <CarouselContent className="h-48">
+                      {service.images.map((image, index) => (
+                        <CarouselItem key={index} className="h-48">
+                          <img 
+                            src={image} 
+                            alt={`${service.title} ${index + 1}`}
+                            className="w-full h-full object-cover"
+                          />
+                        </CarouselItem>
+                      ))}
+                    </CarouselContent>
+                    <CarouselPrevious className="left-2 h-8 w-8" />
+                    <CarouselNext className="right-2 h-8 w-8" />
+                  </Carousel>
+                ) : (
+                  <img 
+                    src={service.images[0]} 
+                    alt={service.title}
+                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                  />
+                )}
+                <div className="absolute inset-0 bg-black/40 group-hover:bg-black/50 transition-colors pointer-events-none" />
+                <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                   <service.icon className="w-12 h-12 text-white" />
                 </div>
               </div>

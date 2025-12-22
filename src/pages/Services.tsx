@@ -3,6 +3,23 @@ import { Plane, Hotel, Shield, Briefcase, FileCheck, MapPin, Check } from "lucid
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
+
+import safaris1 from "@/assets/services/safaris-1.jpg";
+import safaris2 from "@/assets/services/safaris-2.jpg";
+import safaris3 from "@/assets/services/safaris-3.jpg";
+import visa1 from "@/assets/services/visa-1.jpg";
+import visa2 from "@/assets/services/visa-2.jpg";
+import visa3 from "@/assets/services/visa-3.jpg";
+import corporate1 from "@/assets/services/corporate-1.jpg";
+import corporate2 from "@/assets/services/corporate-2.jpg";
+import corporate3 from "@/assets/services/corporate-3.jpg";
 
 const services = [
   {
@@ -15,7 +32,7 @@ const services = [
       "Boutique properties",
       "Best rate guarantee"
     ],
-    image: "https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800"
+    images: ["https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800"]
   },
   {
     icon: Plane,
@@ -27,7 +44,7 @@ const services = [
       "Charter flights to remote lodges",
       "Flexible booking options"
     ],
-    image: "https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=800"
+    images: ["https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=800"]
   },
   {
     icon: Shield,
@@ -39,11 +56,11 @@ const services = [
       "Baggage protection",
       "Emergency evacuation"
     ],
-    image: "https://images.unsplash.com/photo-1450101499163-c8848c66ca85?w=800"
+    images: ["https://images.unsplash.com/photo-1450101499163-c8848c66ca85?w=800"]
   },
   {
     icon: Briefcase,
-    title: "Corporate Travel",
+    title: "Corporate Travel & Group Bookings",
     description: "Tailored business travel solutions for companies seeking efficiency and value.",
     features: [
       "Conference and event planning",
@@ -51,11 +68,11 @@ const services = [
       "Executive travel services",
       "Corporate accounts"
     ],
-    image: "https://images.unsplash.com/photo-1521791136064-7986c2920216?w=800"
+    images: [corporate1, corporate2, corporate3]
   },
   {
     icon: FileCheck,
-    title: "Visa Assistance",
+    title: "Visa Consultancy & Assistance",
     description: "Expert guidance through visa applications and travel documentation.",
     features: [
       "Visa application support",
@@ -63,11 +80,11 @@ const services = [
       "Embassy appointment booking",
       "Travel advisory"
     ],
-    image: "https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?w=800"
+    images: [visa1, visa2, visa3]
   },
   {
     icon: MapPin,
-    title: "Safari Tours",
+    title: "Inbound & Outbound Safaris",
     description: "Unforgettable wildlife experiences in Kenya's premier national parks and reserves.",
     features: [
       "Game drives with expert guides",
@@ -75,7 +92,7 @@ const services = [
       "Hot air balloon rides",
       "Photography safaris"
     ],
-    image: "https://images.unsplash.com/photo-1523805009345-7448845a9e53?w=800"
+    images: [safaris1, safaris2, safaris3]
   }
 ];
 
@@ -117,11 +134,29 @@ const Services = () => {
                 }`}
               >
                 <div className={`${index % 2 === 1 ? "lg:order-2" : ""}`}>
-                  <img 
-                    src={service.image} 
-                    alt={service.title}
-                    className="w-full h-[400px] object-cover rounded-lg shadow-xl"
-                  />
+                  {service.images.length > 1 ? (
+                    <Carousel className="w-full">
+                      <CarouselContent>
+                        {service.images.map((image, imgIndex) => (
+                          <CarouselItem key={imgIndex}>
+                            <img 
+                              src={image} 
+                              alt={`${service.title} ${imgIndex + 1}`}
+                              className="w-full h-[400px] object-cover rounded-lg shadow-xl"
+                            />
+                          </CarouselItem>
+                        ))}
+                      </CarouselContent>
+                      <CarouselPrevious className="left-4" />
+                      <CarouselNext className="right-4" />
+                    </Carousel>
+                  ) : (
+                    <img 
+                      src={service.images[0]} 
+                      alt={service.title}
+                      className="w-full h-[400px] object-cover rounded-lg shadow-xl"
+                    />
+                  )}
                 </div>
                 <div className={`space-y-6 ${index % 2 === 1 ? "lg:order-1" : ""}`}>
                   <div className="inline-flex items-center gap-3 text-primary">
