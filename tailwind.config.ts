@@ -55,6 +55,10 @@ export default {
           bg: "hsl(var(--hero-bg))",
           overlay: "hsl(var(--hero-overlay))",
         },
+        footer: {
+          DEFAULT: "hsl(var(--footer-bg))",
+          foreground: "hsl(var(--footer-foreground))",
+        },
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",
           foreground: "hsl(var(--sidebar-foreground))",
