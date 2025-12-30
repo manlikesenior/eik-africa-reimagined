@@ -1,14 +1,15 @@
 import { Link } from "react-router-dom";
 import { Phone, Mail, MapPin, Facebook, Instagram, Twitter } from "lucide-react";
 import logo from "@/assets/logo.png";
+import NewsletterForm from "@/components/NewsletterForm";
 
 export function Footer() {
   return (
     <footer className="bg-footer text-footer-foreground">
       <div className="container mx-auto px-4 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">
           {/* Logo & About */}
-          <div className="space-y-4">
+          <div className="lg:col-span-2 space-y-4">
             <img src={logo} alt="Eika Africa Experience" className="h-16 brightness-0 invert opacity-90" />
             <p className="text-footer-foreground/80 text-sm leading-relaxed">
               Eika Africa Experience is your trusted partner for unforgettable African adventures. 
@@ -56,19 +57,11 @@ export function Footer() {
                   Book Now
                 </Link>
               </li>
-            </ul>
-          </div>
-
-          {/* Services */}
-          <div>
-            <h4 className="font-display text-lg font-semibold mb-4">Our Services</h4>
-            <ul className="space-y-2 text-sm text-footer-foreground/80">
-              <li>Wildlife Safaris</li>
-              <li>Beach Holidays</li>
-              <li>Hotel Bookings</li>
-              <li>Air Ticketing</li>
-              <li>Travel Insurance</li>
-              <li>Visa Assistance</li>
+              <li>
+                <Link to="/blog" className="text-footer-foreground/80 hover:text-primary transition-colors text-sm">
+                  Blog
+                </Link>
+              </li>
             </ul>
           </div>
 
@@ -99,6 +92,11 @@ export function Footer() {
                 </a>
               </li>
             </ul>
+          </div>
+
+          {/* Newsletter */}
+          <div>
+            <NewsletterForm />
           </div>
         </div>
 

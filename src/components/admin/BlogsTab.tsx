@@ -10,6 +10,8 @@ import { Switch } from "@/components/ui/switch";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Plus, Pencil, Trash2, Eye, EyeOff } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import ImageUpload from "./ImageUpload";
+import RichTextEditor from "./RichTextEditor";
 
 interface Blog {
   id: string;
@@ -191,20 +193,23 @@ const BlogsTab = ({ blogs, loading, onRefresh }: BlogsTabProps) => {
                 </div>
               </div>
 
-              <div>
-                <Label htmlFor="featured_image">Featured Image URL</Label>
-                <Input id="featured_image" value={formData.featured_image} onChange={(e) => setFormData({...formData, featured_image: e.target.value})} />
-              </div>
+              <ImageUpload 
+                value={formData.featured_image} 
+                onChange={(url) => setFormData({...formData, featured_image: url})} 
+                label="Featured Image"
+                folder="blogs"
+              />
 
               <div>
                 <Label htmlFor="excerpt">Excerpt</Label>
                 <Textarea id="excerpt" value={formData.excerpt} onChange={(e) => setFormData({...formData, excerpt: e.target.value})} rows={2} placeholder="Brief description for previews" />
               </div>
 
-              <div>
-                <Label htmlFor="content">Content</Label>
-                <Textarea id="content" value={formData.content} onChange={(e) => setFormData({...formData, content: e.target.value})} rows={10} placeholder="Full blog content (supports basic markdown)" />
-              </div>
+              <RichTextEditor 
+                value={formData.content} 
+                onChange={(content) => setFormData({...formData, content})} 
+                label="Content"
+              />
 
               <div>
                 <Label htmlFor="tags">Tags (comma-separated)</Label>
