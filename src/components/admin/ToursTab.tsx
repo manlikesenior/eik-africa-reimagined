@@ -10,6 +10,7 @@ import { Switch } from "@/components/ui/switch";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Plus, Pencil, Trash2, Eye, EyeOff, Star, StarOff } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import ImageUpload from "./ImageUpload";
 
 interface Tour {
   id: string;
@@ -228,10 +229,12 @@ const ToursTab = ({ tours, loading, onRefresh }: ToursTabProps) => {
                 <Input id="price_note" value={formData.price_note} onChange={(e) => setFormData({...formData, price_note: e.target.value})} placeholder="e.g., per person sharing" />
               </div>
 
-              <div>
-                <Label htmlFor="image_url">Image URL</Label>
-                <Input id="image_url" value={formData.image_url} onChange={(e) => setFormData({...formData, image_url: e.target.value})} />
-              </div>
+              <ImageUpload 
+                value={formData.image_url} 
+                onChange={(url) => setFormData({...formData, image_url: url})} 
+                label="Tour Image"
+                folder="tours"
+              />
 
               <div>
                 <Label htmlFor="description">Short Description</Label>
