@@ -1,13 +1,14 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { LogOut, Mail, Phone, Calendar, Users } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
-import logo from "@/assets/logo.png";
+import AdminHeader from "@/components/admin/AdminHeader";
+import InquiriesTab from "@/components/admin/InquiriesTab";
+import ToursTab from "@/components/admin/ToursTab";
+import BlogsTab from "@/components/admin/BlogsTab";
+import SubscribersTab from "@/components/admin/SubscribersTab";
+import { MessageSquare, Map, FileText, Mail } from "lucide-react";
 
 interface BookingInquiry {
   id: string;
@@ -24,22 +25,64 @@ interface BookingInquiry {
   message: string | null;
 }
 
-const statusColors: Record<string, string> = {
-  new: "bg-blue-500",
-  contacted: "bg-yellow-500",
-  confirmed: "bg-green-500",
-  completed: "bg-gray-500"
-};
+interface Tour {
+  id: string;
+  title: string;
+  slug: string;
+  description: string | null;
+  overview: string | null;
+  duration: string;
+  price: number | null;
+  price_note: string | null;
+  image_url: string | null;
+  is_published: boolean | null;
+  is_featured: boolean | null;
+  destinations: string[] | null;
+  highlights: string[] | null;
+  inclusions: string[] | null;
+  exclusions: string[] | null;
+  created_at: string;
+}
+
+interface Blog {
+  id: string;
+  title: string;
+  slug: string;
+  excerpt: string | null;
+  content: string | null;
+  featured_image: string | null;
+  author: string | null;
+  category: string | null;
+  tags: string[] | null;
+  is_published: boolean | null;
+  published_at: string | null;
+  created_at: string;
+}
+
+interface Subscriber {
+  id: string;
+  email: string;
+  first_name: string | null;
+  last_name: string | null;
+  is_subscribed: boolean | null;
+  source: string | null;
+  subscribed_at: string;
+}
 
 const AdminDashboard = () => {
   const [inquiries, setInquiries] = useState<BookingInquiry[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [tours, setTours] = useState<Tour[]>([]);
+  const [blogs, setBlogs] = useState<Blog[]>([]);
+  const [subscribers, setSubscribers] = useState<Subscriber[]>([]);
+  const [loadingInquiries, setLoadingInquiries] = useState(true);
+  const [loadingTours, setLoadingTours] = useState(true);
+  const [loadingBlogs, setLoadingBlogs] = useState(true);
+  const [loadingSubscribers, setLoadingSubscribers] = useState(true);
   const navigate = useNavigate();
   const { toast } = useToast();
 
   useEffect(() => {
     checkAuth();
-    fetchInquiries();
   }, []);
 
   const checkAuth = async () => {
@@ -58,7 +101,14 @@ const AdminDashboard = () => {
     if (!adminData) {
       await supabase.auth.signOut();
       navigate("/admin");
+      return;
     }
+
+    // Fetch all data
+    fetchInquiries();
+    fetchTours();
+    fetchBlogs();
+    fetchSubscribers();
   };
 
   const fetchInquiries = async () => {
@@ -70,10 +120,46 @@ const AdminDashboard = () => {
     if (!error && data) {
       setInquiries(data);
     }
-    setLoading(false);
+    setLoadingInquiries(false);
   };
 
-  const updateStatus = async (id: string, status: string) => {
+  const fetchTours = async () => {
+    const { data, error } = await supabase
+      .from("tours")
+      .select("*")
+      .order("created_at", { ascending: false });
+
+    if (!error && data) {
+      setTours(data);
+    }
+    setLoadingTours(false);
+  };
+
+  const fetchBlogs = async () => {
+    const { data, error } = await supabase
+      .from("blogs")
+      .select("*")
+      .order("created_at", { ascending: false });
+
+    if (!error && data) {
+      setBlogs(data);
+    }
+    setLoadingBlogs(false);
+  };
+
+  const fetchSubscribers = async () => {
+    const { data, error } = await supabase
+      .from("email_subscribers")
+      .select("*")
+      .order("subscribed_at", { ascending: false });
+
+    if (!error && data) {
+      setSubscribers(data);
+    }
+    setLoadingSubscribers(false);
+  };
+
+  const updateInquiryStatus = async (id: string, status: string) => {
     const { error } = await supabase
       .from("booking_inquiries")
       .update({ status })
@@ -90,94 +176,73 @@ const AdminDashboard = () => {
     navigate("/admin");
   };
 
+  const newInquiriesCount = inquiries.filter(i => i.status === "new").length;
+
   return (
     <div className="min-h-screen bg-secondary">
-      {/* Header */}
-      <header className="bg-background border-b sticky top-0 z-50">
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <img src={logo} alt="EIK Africa" className="h-10" />
-          <div className="flex items-center gap-4">
-            <span className="text-sm text-muted-foreground">Admin Dashboard</span>
-            <Button variant="outline" size="sm" onClick={handleLogout}>
-              <LogOut className="w-4 h-4 mr-2" /> Logout
-            </Button>
-          </div>
-        </div>
-      </header>
+      <AdminHeader onLogout={handleLogout} />
 
       <main className="container mx-auto px-4 py-8">
         <div className="mb-8">
-          <h1 className="font-display text-3xl font-bold">Booking Inquiries</h1>
-          <p className="text-muted-foreground">Manage and respond to customer inquiries</p>
+          <h1 className="font-display text-3xl font-bold">Admin Dashboard</h1>
+          <p className="text-muted-foreground">Manage your website content</p>
         </div>
 
-        {loading ? (
-          <p>Loading...</p>
-        ) : inquiries.length === 0 ? (
-          <Card>
-            <CardContent className="py-12 text-center">
-              <p className="text-muted-foreground">No booking inquiries yet.</p>
-            </CardContent>
-          </Card>
-        ) : (
-          <div className="grid gap-4">
-            {inquiries.map((inquiry) => (
-              <Card key={inquiry.id}>
-                <CardHeader className="pb-2">
-                  <div className="flex items-start justify-between">
-                    <div>
-                      <CardTitle className="text-lg">
-                        {inquiry.first_name} {inquiry.last_name}
-                      </CardTitle>
-                      <p className="text-sm text-muted-foreground">
-                        {inquiry.tour_name || "General Inquiry"}
-                      </p>
-                    </div>
-                    <Select value={inquiry.status} onValueChange={(v) => updateStatus(inquiry.id, v)}>
-                      <SelectTrigger className="w-32">
-                        <Badge className={statusColors[inquiry.status]}>{inquiry.status}</Badge>
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="new">New</SelectItem>
-                        <SelectItem value="contacted">Contacted</SelectItem>
-                        <SelectItem value="confirmed">Confirmed</SelectItem>
-                        <SelectItem value="completed">Completed</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </CardHeader>
-                <CardContent className="space-y-3">
-                  <div className="flex flex-wrap gap-4 text-sm">
-                    <a href={`mailto:${inquiry.email}`} className="flex items-center gap-1 text-primary hover:underline">
-                      <Mail className="w-4 h-4" /> {inquiry.email}
-                    </a>
-                    {inquiry.phone && (
-                      <a href={`tel:${inquiry.phone}`} className="flex items-center gap-1 text-primary hover:underline">
-                        <Phone className="w-4 h-4" /> {inquiry.phone}
-                      </a>
-                    )}
-                    {inquiry.travel_date && (
-                      <span className="flex items-center gap-1 text-muted-foreground">
-                        <Calendar className="w-4 h-4" /> {inquiry.travel_date}
-                      </span>
-                    )}
-                    <span className="flex items-center gap-1 text-muted-foreground">
-                      <Users className="w-4 h-4" /> {inquiry.adults} Adults, {inquiry.children} Children
-                    </span>
-                  </div>
-                  {inquiry.message && (
-                    <p className="text-sm text-muted-foreground bg-muted p-3 rounded">
-                      {inquiry.message}
-                    </p>
-                  )}
-                  <p className="text-xs text-muted-foreground">
-                    Received: {new Date(inquiry.created_at).toLocaleString()}
-                  </p>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        )}
+        <Tabs defaultValue="inquiries" className="space-y-6">
+          <TabsList className="grid w-full grid-cols-4 lg:w-auto lg:inline-grid">
+            <TabsTrigger value="inquiries" className="flex items-center gap-2">
+              <MessageSquare className="w-4 h-4" />
+              <span className="hidden sm:inline">Inquiries</span>
+              {newInquiriesCount > 0 && (
+                <span className="bg-primary text-primary-foreground text-xs rounded-full px-2 py-0.5">{newInquiriesCount}</span>
+              )}
+            </TabsTrigger>
+            <TabsTrigger value="tours" className="flex items-center gap-2">
+              <Map className="w-4 h-4" />
+              <span className="hidden sm:inline">Tours</span>
+            </TabsTrigger>
+            <TabsTrigger value="blogs" className="flex items-center gap-2">
+              <FileText className="w-4 h-4" />
+              <span className="hidden sm:inline">Blogs</span>
+            </TabsTrigger>
+            <TabsTrigger value="subscribers" className="flex items-center gap-2">
+              <Mail className="w-4 h-4" />
+              <span className="hidden sm:inline">Subscribers</span>
+            </TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="inquiries">
+            <InquiriesTab 
+              inquiries={inquiries} 
+              loading={loadingInquiries} 
+              onUpdateStatus={updateInquiryStatus} 
+            />
+          </TabsContent>
+
+          <TabsContent value="tours">
+            <ToursTab 
+              tours={tours} 
+              loading={loadingTours} 
+              onRefresh={fetchTours} 
+            />
+          </TabsContent>
+
+          <TabsContent value="blogs">
+            <BlogsTab 
+              blogs={blogs} 
+              loading={loadingBlogs} 
+              onRefresh={fetchBlogs} 
+            />
+          </TabsContent>
+
+          <TabsContent value="subscribers">
+            <SubscribersTab 
+              subscribers={subscribers} 
+              loading={loadingSubscribers} 
+              onRefresh={fetchSubscribers} 
+            />
+          </TabsContent>
+        </Tabs>
       </main>
     </div>
   );
