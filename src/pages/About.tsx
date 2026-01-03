@@ -37,9 +37,8 @@ const values = [
 ];
 
 const stats = [
-  { value: "2025", label: "Year Established" },
-  { value: "Nairobi", label: "Based In Kenya" },
-  { value: "Registered", label: "Travel & Tours Company" }
+  { value: "2025", label: "Year Registered" },
+  { value: "Nairobi", label: "Based In Kenya" }
 ];
 
 const destinations = {
@@ -83,7 +82,6 @@ const About = () => {
               <p className="text-primary-foreground font-medium text-sm">
                 "Your Home to Unforgettable African Journeys"
               </p>
-              <p className="text-primary-foreground/80 text-xs">- EI Keiny</p>
             </div>
           </div>
         </div>
@@ -265,7 +263,7 @@ const About = () => {
             <Button 
               size="lg" 
               variant="outline" 
-              className="border-primary-foreground text-primary-foreground hover:bg-primary-foreground hover:text-primary"
+              className="border-white text-white hover:bg-white hover:text-primary"
               asChild
             >
               <Link to="/experiences">Explore Experiences</Link>
