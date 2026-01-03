@@ -73,9 +73,6 @@ const Experiences = () => {
         />
         <div className="absolute inset-0 bg-black/60" />
         <div className="relative z-10 container mx-auto px-4 text-center">
-          <p className="text-primary font-medium tracking-wider uppercase mb-4">
-            Safari Experiences
-          </p>
           <h1 className="font-display text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6">
             Discover Africa's Wonders
           </h1>

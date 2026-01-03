@@ -19,9 +19,6 @@ export function HeroSection() {
       {/* Content */}
       <div className="relative z-10 container mx-auto px-4 text-center">
         <div className="max-w-4xl mx-auto space-y-6 animate-fade-in">
-          <p className="text-primary font-medium tracking-wider uppercase">
-            Welcome to EIK Africa Experience
-          </p>
           <h1 className="font-display text-4xl md:text-5xl lg:text-7xl font-bold text-white leading-tight">
             Unforgettable African Journeys Begin Here
           </h1>
