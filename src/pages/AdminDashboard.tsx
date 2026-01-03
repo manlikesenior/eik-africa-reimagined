@@ -9,6 +9,7 @@ import ToursTab from "@/components/admin/ToursTab";
 import BlogsTab from "@/components/admin/BlogsTab";
 import SubscribersTab from "@/components/admin/SubscribersTab";
 import { MessageSquare, Map, FileText, Mail } from "lucide-react";
+import type { Json } from "@/integrations/supabase/types";
 
 interface BookingInquiry {
   id: string;
@@ -35,12 +36,15 @@ interface Tour {
   price: number | null;
   price_note: string | null;
   image_url: string | null;
+  gallery: string[] | null;
   is_published: boolean | null;
   is_featured: boolean | null;
   destinations: string[] | null;
   highlights: string[] | null;
   inclusions: string[] | null;
   exclusions: string[] | null;
+  itinerary: unknown;
+  category: string | null;
   created_at: string;
 }
 
