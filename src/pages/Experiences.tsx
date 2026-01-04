@@ -87,7 +87,7 @@ const Experiences = () => {
       <section className="py-16 bg-secondary">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
-            <h2 className="font-display text-3xl font-bold">Why Choose EIK Africa Experience</h2>
+            <h2 className="font-display text-3xl font-bold">Why Choose Eika Africa Experience</h2>
           </div>
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
             {features.map((feature) => (
