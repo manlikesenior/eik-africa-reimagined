@@ -263,7 +263,7 @@ const About = () => {
             <Button 
               size="lg" 
               variant="outline" 
-              className="border-white text-white hover:bg-white hover:text-primary"
+              className="border-white text-white bg-transparent hover:bg-white hover:text-[hsl(var(--primary))]"
               asChild
             >
               <Link to="/experiences">Explore Experiences</Link>
