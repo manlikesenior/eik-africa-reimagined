@@ -38,7 +38,8 @@ const values = [
 
 const stats = [
   { value: "2025", label: "Year Registered" },
-  { value: "Nairobi", label: "Based In Kenya" }
+  { value: "Nairobi", label: "Based In Kenya" },
+  { value: "Africa", label: "Hundreds of experiences across Africa" }
 ];
 
 const destinations = {

@@ -11,6 +11,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Phone, Mail, MapPin, Clock, CheckCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import bookingHeroImage from "@/assets/booking-hero.jpg";
 
 const services = [
   "Wildlife Safari",
@@ -196,16 +197,15 @@ const Booking = () => {
     <Layout>
       {/* Hero */}
       <section className="relative py-20 overflow-hidden">
-        <div 
-          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-          style={{
-            backgroundImage: "url('https://images.unsplash.com/photo-1493246507139-91e8fad9978e?w=1920&q=80')"
-          }}
+        <img 
+          src={bookingHeroImage}
+          alt="Book your African experience"
+          className="absolute inset-0 w-full h-full object-cover"
         />
         <div className="absolute inset-0 bg-black/60" />
         <div className="relative z-10 container mx-auto px-4 text-center">
           <h1 className="font-display text-4xl md:text-5xl font-bold text-white mb-4">
-            Book Your Safari
+            Book Your Experience
           </h1>
           <p className="text-lg text-white/90 max-w-2xl mx-auto">
             Fill out the form below and our travel experts will craft your perfect African adventure.
