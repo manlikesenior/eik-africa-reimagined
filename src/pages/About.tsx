@@ -2,6 +2,7 @@ import { Layout } from "@/components/layout/Layout";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { Target, Eye, Heart, Shield, Users, Award, Lightbulb, Leaf, Compass, Briefcase, GraduationCap, Church, Users2, Building } from "lucide-react";
+import aboutHeroImage from "@/assets/about-hero.jpg";
 
 const values = [
   {
@@ -64,11 +65,10 @@ const About = () => {
     <Layout>
       {/* Hero */}
       <section className="relative py-32 overflow-hidden">
-        <div 
-          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-          style={{
-            backgroundImage: "url('https://images.unsplash.com/photo-1489392191049-fc10c97e64b6?w=1920&q=80')"
-          }}
+        <img 
+          src={aboutHeroImage}
+          alt="Eika Africa Experience team"
+          className="absolute inset-0 w-full h-full object-cover"
         />
         <div className="absolute inset-0 bg-gradient-to-r from-black/80 to-black/40" />
         <div className="relative z-10 container mx-auto px-4">

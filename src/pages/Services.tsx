@@ -11,6 +11,7 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 
+import servicesHeroImage from "@/assets/services-hero.jpg";
 import safaris1 from "@/assets/services/safaris-1.jpg";
 import safaris2 from "@/assets/services/safaris-2.jpg";
 import safaris3 from "@/assets/services/safaris-3.jpg";
@@ -110,11 +111,10 @@ const Services = () => {
     <Layout>
       {/* Hero */}
       <section className="relative py-24 overflow-hidden">
-        <div 
-          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-          style={{
-            backgroundImage: "url('https://images.unsplash.com/photo-1493246507139-91e8fad9978e?w=1920&q=80')"
-          }}
+        <img 
+          src={servicesHeroImage}
+          alt="Our services - wildebeest migration"
+          className="absolute inset-0 w-full h-full object-cover"
         />
         <div className="absolute inset-0 bg-black/60" />
         <div className="relative z-10 container mx-auto px-4 text-center">
