@@ -189,6 +189,27 @@ const TourDetail = () => {
               </section>
             )}
 
+            {/* Gallery */}
+            {tour.gallery && tour.gallery.length > 0 && (
+              <section>
+                <h2 className="font-display text-2xl font-bold mb-6">Gallery</h2>
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                  {tour.gallery.map((image, index) => (
+                    <div 
+                      key={index} 
+                      className="aspect-[4/3] rounded-lg overflow-hidden group cursor-pointer"
+                    >
+                      <img 
+                        src={image} 
+                        alt={`${tour.title} - Image ${index + 1}`}
+                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                      />
+                    </div>
+                  ))}
+                </div>
+              </section>
+            )}
+
             {/* Inclusions & Exclusions */}
             <section className="grid md:grid-cols-2 gap-8">
               {tour.inclusions && tour.inclusions.length > 0 && (
