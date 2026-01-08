@@ -101,3 +101,33 @@ export const DESTINATIONS = {
   "West Africa": ["Ghana", "Nigeria"],
   "North Africa": ["Egypt", "Morocco", "Tunisia"],
 } as const;
+
+// Tour Categories
+export const TOUR_CATEGORIES = [
+  "Wildlife Safari",
+  "Beach & Coastal",
+  "Cultural & Heritage",
+  "Adventure",
+  "Honeymoon & Romance",
+  "Family",
+  "Photography",
+  "Gorilla Trekking",
+] as const;
+
+// All Countries (flattened for filtering)
+export const ALL_COUNTRIES = [
+  "Kenya",
+  "Tanzania",
+  "Uganda",
+  "Rwanda",
+  "Zanzibar",
+  "South Africa",
+  "Zambia",
+  "Zimbabwe",
+  "Botswana",
+  "Ghana",
+  "Nigeria",
+  "Egypt",
+  "Morocco",
+  "Tunisia",
+] as const;
