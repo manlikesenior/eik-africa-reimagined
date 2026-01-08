@@ -1,10 +1,11 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { Link } from "react-router-dom";
 import { Layout } from "@/components/layout/Layout";
-import { Clock, MapPin, ArrowRight, Users, Star } from "lucide-react";
+import { Clock, MapPin, ArrowRight, Users, Star, Filter, X } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
+import { ALL_COUNTRIES, TOUR_CATEGORIES } from "@/lib/constants";
 
 interface Tour {
   id: string;
@@ -13,6 +14,7 @@ interface Tour {
   description: string;
   duration: string;
   destinations: string[];
+  category: string | null;
   image_url: string;
   highlights: string[];
   is_featured: boolean;
@@ -44,6 +46,8 @@ const features = [
 const Experiences = () => {
   const [tours, setTours] = useState<Tour[]>([]);
   const [loading, setLoading] = useState(true);
+  const [selectedCountry, setSelectedCountry] = useState<string>("all");
+  const [selectedCategory, setSelectedCategory] = useState<string>("all");
 
   useEffect(() => {
     async function fetchTours() {
@@ -60,6 +64,41 @@ const Experiences = () => {
     }
     fetchTours();
   }, []);
+
+  // Get unique countries and categories from actual tours
+  const availableCountries = useMemo(() => {
+    const countries = new Set<string>();
+    tours.forEach(tour => {
+      tour.destinations?.forEach(dest => countries.add(dest));
+    });
+    return Array.from(countries).sort();
+  }, [tours]);
+
+  const availableCategories = useMemo(() => {
+    const categories = new Set<string>();
+    tours.forEach(tour => {
+      if (tour.category) categories.add(tour.category);
+    });
+    return Array.from(categories).sort();
+  }, [tours]);
+
+  // Filter tours based on selections
+  const filteredTours = useMemo(() => {
+    return tours.filter(tour => {
+      const matchesCountry = selectedCountry === "all" || 
+        tour.destinations?.includes(selectedCountry);
+      const matchesCategory = selectedCategory === "all" || 
+        tour.category === selectedCategory;
+      return matchesCountry && matchesCategory;
+    });
+  }, [tours, selectedCountry, selectedCategory]);
+
+  const clearFilters = () => {
+    setSelectedCountry("all");
+    setSelectedCategory("all");
+  };
+
+  const hasActiveFilters = selectedCountry !== "all" || selectedCategory !== "all";
 
   return (
     <Layout>
@@ -106,7 +145,7 @@ const Experiences = () => {
       {/* Tours Grid */}
       <section className="py-20 bg-background">
         <div className="container mx-auto px-4">
-          <div className="text-center mb-12">
+          <div className="text-center mb-8">
             <p className="text-primary font-medium tracking-wider uppercase mb-2">
               Our Tours
             </p>
@@ -115,11 +154,52 @@ const Experiences = () => {
             </h2>
           </div>
 
+          {/* Filters */}
+          <div className="flex flex-wrap items-center justify-center gap-4 mb-12">
+            <div className="flex items-center gap-2">
+              <Filter className="w-4 h-4 text-muted-foreground" />
+              <span className="text-sm font-medium">Filter:</span>
+            </div>
+            
+            <select
+              value={selectedCountry}
+              onChange={(e) => setSelectedCountry(e.target.value)}
+              className="px-4 py-2 rounded-lg border border-input bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+            >
+              <option value="all">All Destinations</option>
+              {availableCountries.map(country => (
+                <option key={country} value={country}>{country}</option>
+              ))}
+            </select>
+
+            <select
+              value={selectedCategory}
+              onChange={(e) => setSelectedCategory(e.target.value)}
+              className="px-4 py-2 rounded-lg border border-input bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+            >
+              <option value="all">All Categories</option>
+              {availableCategories.map(category => (
+                <option key={category} value={category}>{category}</option>
+              ))}
+            </select>
+
+            {hasActiveFilters && (
+              <Button variant="ghost" size="sm" onClick={clearFilters} className="gap-1">
+                <X className="w-4 h-4" /> Clear
+              </Button>
+            )}
+          </div>
+
           {loading ? (
             <div className="text-center py-12">Loading tours...</div>
+          ) : filteredTours.length === 0 ? (
+            <div className="text-center py-12">
+              <p className="text-muted-foreground mb-4">No tours found matching your filters.</p>
+              <Button variant="outline" onClick={clearFilters}>Clear Filters</Button>
+            </div>
           ) : (
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {tours.map((tour) => (
+              {filteredTours.map((tour) => (
                 <Card 
                   key={tour.id} 
                   className="group overflow-hidden border-0 shadow-lg hover:shadow-xl transition-all duration-300"
@@ -130,11 +210,18 @@ const Experiences = () => {
                       alt={tour.title}
                       className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                     />
-                    {tour.is_featured && (
-                      <div className="absolute top-4 left-4 bg-primary text-primary-foreground px-3 py-1 rounded-full text-sm font-medium">
-                        Featured
-                      </div>
-                    )}
+                    <div className="absolute top-4 left-4 flex gap-2">
+                      {tour.is_featured && (
+                        <span className="bg-primary text-primary-foreground px-3 py-1 rounded-full text-sm font-medium">
+                          Featured
+                        </span>
+                      )}
+                      {tour.category && (
+                        <span className="bg-accent text-accent-foreground px-3 py-1 rounded-full text-sm font-medium">
+                          {tour.category}
+                        </span>
+                      )}
+                    </div>
                   </div>
                   <CardContent className="p-6 space-y-4">
                     <h3 className="font-display text-xl font-semibold group-hover:text-primary transition-colors">
@@ -150,7 +237,7 @@ const Experiences = () => {
                       </div>
                       <div className="flex items-center gap-1">
                         <MapPin className="w-4 h-4" />
-                        <span>{tour.destinations?.[0] || "Kenya"}</span>
+                        <span>{tour.destinations?.join(", ") || "Africa"}</span>
                       </div>
                     </div>
                     <div className="flex items-center justify-between pt-2">
