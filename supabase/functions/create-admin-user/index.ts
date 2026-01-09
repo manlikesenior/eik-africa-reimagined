@@ -6,14 +6,65 @@ const corsHeaders = {
 };
 
 Deno.serve(async (req) => {
-  // Handle CORS preflight and allow unauthenticated access for initial setup
+  // Handle CORS preflight requests
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
-    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+    // Verify that the request is made with the service role key (server-side only)
+    const authHeader = req.headers.get("Authorization");
+    if (!authHeader?.startsWith("Bearer ")) {
+      return new Response(
+        JSON.stringify({ error: "Unauthorized: Missing authorization header" }),
+        { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    const token = authHeader.replace("Bearer ", "");
     const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+    
+    // Only allow calls made with the service role key (not user JWTs)
+    if (token !== serviceRoleKey) {
+      return new Response(
+        JSON.stringify({ error: "Unauthorized: This endpoint requires service role access" }),
+        { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    // Parse and validate request body
+    const { email, password } = await req.json();
+    
+    if (!email || typeof email !== "string" || !email.includes("@")) {
+      return new Response(
+        JSON.stringify({ error: "Invalid email address" }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    if (!password || typeof password !== "string" || password.length < 12) {
+      return new Response(
+        JSON.stringify({ error: "Password must be at least 12 characters long" }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    // Check password complexity
+    const hasUppercase = /[A-Z]/.test(password);
+    const hasLowercase = /[a-z]/.test(password);
+    const hasNumber = /[0-9]/.test(password);
+    const hasSpecial = /[!@#$%^&*(),.?":{}|<>]/.test(password);
+
+    if (!hasUppercase || !hasLowercase || !hasNumber || !hasSpecial) {
+      return new Response(
+        JSON.stringify({ 
+          error: "Password must contain uppercase, lowercase, number, and special character" 
+        }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     
     const supabaseAdmin = createClient(supabaseUrl, serviceRoleKey, {
       auth: {
@@ -21,9 +72,6 @@ Deno.serve(async (req) => {
         persistSession: false,
       },
     });
-
-    const email = "reservations@eikafricaexperience.com";
-    const password = "123Admin";
 
     // Check if user already exists
     const { data: existingUsers } = await supabaseAdmin.auth.admin.listUsers();
@@ -39,7 +87,7 @@ Deno.serve(async (req) => {
 
       if (existingAdmin) {
         return new Response(
-          JSON.stringify({ message: "Admin user already exists", userId: existingUser.id }),
+          JSON.stringify({ message: "Admin user already exists" }),
           { headers: { ...corsHeaders, "Content-Type": "application/json" } }
         );
       }
@@ -52,7 +100,7 @@ Deno.serve(async (req) => {
       if (adminError) throw adminError;
 
       return new Response(
-        JSON.stringify({ message: "Existing user promoted to admin", userId: existingUser.id }),
+        JSON.stringify({ message: "Existing user promoted to admin" }),
         { headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
@@ -73,14 +121,16 @@ Deno.serve(async (req) => {
 
     if (adminError) throw adminError;
 
+    console.log(`Admin user created: ${email}`);
+
     return new Response(
-      JSON.stringify({ message: "Admin user created successfully", userId: newUser.user.id }),
+      JSON.stringify({ message: "Admin user created successfully" }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   } catch (error: any) {
     console.error("Error creating admin user:", error);
     return new Response(
-      JSON.stringify({ error: error.message }),
+      JSON.stringify({ error: "An error occurred while creating admin user" }),
       { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   }
