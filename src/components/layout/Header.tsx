@@ -57,7 +57,7 @@ export function Header() {
               <SheetContent side="left" className="w-80 bg-background">
                 <SheetHeader>
                   <SheetTitle className="text-left">
-                    <img src={logo} alt="Eika Africa Experience" className="h-12" />
+                    <img src={logo} alt="Eika Africa Experience" className="h-16" />
                   </SheetTitle>
                 </SheetHeader>
                 <div className="flex flex-col gap-2 mt-8">
@@ -97,7 +97,7 @@ export function Header() {
             </Sheet>
 
             <Link to="/" className="flex items-center">
-              <img src={logo} alt="Eika Africa Experience" className="h-12 md:h-16" />
+              <img src={logo} alt="Eika Africa Experience" className="h-16 md:h-20" />
             </Link>
           </div>
 
