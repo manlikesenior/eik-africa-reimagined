@@ -1,5 +1,5 @@
 import { useEffect, useState, useMemo } from "react";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { Layout } from "@/components/layout/Layout";
 import { Clock, MapPin, ArrowRight, Users, Star, Filter, X } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
@@ -44,10 +44,33 @@ const features = [
 ];
 
 const Experiences = () => {
+  const [searchParams, setSearchParams] = useSearchParams();
   const [tours, setTours] = useState<Tour[]>([]);
   const [loading, setLoading] = useState(true);
-  const [selectedCountry, setSelectedCountry] = useState<string>("all");
-  const [selectedCategory, setSelectedCategory] = useState<string>("all");
+  
+  // Initialize filters from URL params
+  const selectedCountry = searchParams.get("country") || "all";
+  const selectedCategory = searchParams.get("category") || "all";
+
+  const setSelectedCountry = (value: string) => {
+    const params = new URLSearchParams(searchParams);
+    if (value === "all") {
+      params.delete("country");
+    } else {
+      params.set("country", value);
+    }
+    setSearchParams(params);
+  };
+
+  const setSelectedCategory = (value: string) => {
+    const params = new URLSearchParams(searchParams);
+    if (value === "all") {
+      params.delete("category");
+    } else {
+      params.set("category", value);
+    }
+    setSearchParams(params);
+  };
 
   useEffect(() => {
     async function fetchTours() {
@@ -94,8 +117,7 @@ const Experiences = () => {
   }, [tours, selectedCountry, selectedCategory]);
 
   const clearFilters = () => {
-    setSelectedCountry("all");
-    setSelectedCategory("all");
+    setSearchParams(new URLSearchParams());
   };
 
   const hasActiveFilters = selectedCountry !== "all" || selectedCategory !== "all";
@@ -113,11 +135,14 @@ const Experiences = () => {
         <div className="absolute inset-0 bg-black/60" />
         <div className="relative z-10 container mx-auto px-4 text-center">
           <h1 className="font-display text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6">
-            Discover Africa's Wonders
+            {selectedCountry !== "all" 
+              ? `Explore ${selectedCountry}` 
+              : "Discover Africa's Wonders"}
           </h1>
           <p className="text-lg text-white/90 max-w-2xl mx-auto">
-            Explore our curated collection of safari experiences, from the iconic Maasai Mara 
-            to the pristine beaches of the Kenyan coast.
+            {selectedCountry !== "all"
+              ? `Browse our curated collection of ${selectedCountry} safari experiences and adventures.`
+              : "Explore our curated collection of safari experiences, from the iconic Maasai Mara to the pristine beaches of the Kenyan coast."}
           </p>
         </div>
       </section>

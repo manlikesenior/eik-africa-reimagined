@@ -1,15 +1,18 @@
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Menu, X, Phone, Mail } from "lucide-react";
+import { Menu, X, Phone, Mail, Home, Info, Briefcase, BookOpen, Calendar, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Sheet, SheetContent, SheetTrigger, SheetHeader, SheetTitle } from "@/components/ui/sheet";
+import { CountryMegaMenu } from "./CountryMegaMenu";
 import logo from "@/assets/logo.png";
 
 const navLinks = [
-  { href: "/", label: "Home" },
-  { href: "/services", label: "Services" },
-  { href: "/experiences", label: "Experiences" },
-  { href: "/blog", label: "Blog" },
-  { href: "/about", label: "About Us" },
+  { href: "/", label: "Home", icon: Home },
+  { href: "/services", label: "Services", icon: Briefcase },
+  { href: "/experiences", label: "Experiences", icon: MapPin },
+  { href: "/blog", label: "Blog", icon: BookOpen },
+  { href: "/about", label: "About Us", icon: Info },
+  { href: "/booking", label: "Book Now", icon: Calendar },
 ];
 
 export function Header() {
@@ -40,66 +43,81 @@ export function Header() {
       {/* Main nav */}
       <nav className="container mx-auto px-4 py-4">
         <div className="flex items-center justify-between">
-          <Link to="/" className="flex items-center">
-            <img src={logo} alt="Eika Africa Experience" className="h-12 md:h-16" />
-          </Link>
+          {/* Hamburger Menu for main navigation */}
+          <div className="flex items-center gap-4">
+            <Sheet open={isOpen} onOpenChange={setIsOpen}>
+              <SheetTrigger asChild>
+                <button
+                  className="p-2 hover:bg-muted rounded-md transition-colors"
+                  aria-label="Open menu"
+                >
+                  <Menu className="w-6 h-6" />
+                </button>
+              </SheetTrigger>
+              <SheetContent side="left" className="w-80 bg-background">
+                <SheetHeader>
+                  <SheetTitle className="text-left">
+                    <img src={logo} alt="Eika Africa Experience" className="h-12" />
+                  </SheetTitle>
+                </SheetHeader>
+                <div className="flex flex-col gap-2 mt-8">
+                  {navLinks.map((link) => {
+                    const Icon = link.icon;
+                    return (
+                      <Link
+                        key={link.href}
+                        to={link.href}
+                        className={`flex items-center gap-3 px-4 py-3 rounded-md text-sm font-medium transition-colors ${
+                          location.pathname === link.href
+                            ? "bg-primary text-primary-foreground"
+                            : "text-foreground hover:bg-muted"
+                        }`}
+                        onClick={() => setIsOpen(false)}
+                      >
+                        <Icon className="w-5 h-5" />
+                        {link.label}
+                      </Link>
+                    );
+                  })}
+                </div>
+                
+                {/* Contact info in sidebar */}
+                <div className="mt-8 pt-8 border-t border-border">
+                  <p className="text-sm text-muted-foreground mb-4">Contact Us</p>
+                  <a href="tel:+254116735102" className="flex items-center gap-2 text-sm mb-2 hover:text-primary transition-colors">
+                    <Phone className="w-4 h-4" />
+                    <span>+254 116 735 102</span>
+                  </a>
+                  <a href="mailto:reservations@eikafricaexperience.com" className="flex items-center gap-2 text-sm hover:text-primary transition-colors">
+                    <Mail className="w-4 h-4" />
+                    <span>reservations@eikafricaexperience.com</span>
+                  </a>
+                </div>
+              </SheetContent>
+            </Sheet>
 
-          {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center gap-8">
-            {navLinks.map((link) => (
-              <Link
-                key={link.href}
-                to={link.href}
-                className={`text-sm font-medium transition-colors hover:text-primary ${
-                  location.pathname === link.href
-                    ? "text-primary"
-                    : "text-foreground"
-                }`}
-              >
-                {link.label}
-              </Link>
-            ))}
+            <Link to="/" className="flex items-center">
+              <img src={logo} alt="Eika Africa Experience" className="h-12 md:h-16" />
+            </Link>
+          </div>
+
+          {/* Desktop Country Navigation - Center */}
+          <CountryMegaMenu />
+
+          {/* Book Now Button - Right */}
+          <div className="hidden lg:block">
             <Button asChild>
               <Link to="/booking">Book Now</Link>
             </Button>
           </div>
 
-          {/* Mobile Menu Button */}
-          <button
-            className="md:hidden p-2"
-            onClick={() => setIsOpen(!isOpen)}
-            aria-label="Toggle menu"
-          >
-            {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-          </button>
-        </div>
-
-        {/* Mobile Navigation */}
-        {isOpen && (
-          <div className="md:hidden pt-4 pb-2 animate-fade-in">
-            <div className="flex flex-col gap-4">
-              {navLinks.map((link) => (
-                <Link
-                  key={link.href}
-                  to={link.href}
-                  className={`text-sm font-medium transition-colors hover:text-primary ${
-                    location.pathname === link.href
-                      ? "text-primary"
-                      : "text-foreground"
-                  }`}
-                  onClick={() => setIsOpen(false)}
-                >
-                  {link.label}
-                </Link>
-              ))}
-              <Button asChild className="w-full">
-                <Link to="/booking" onClick={() => setIsOpen(false)}>
-                  Book Now
-                </Link>
-              </Button>
-            </div>
+          {/* Mobile: Show only hamburger (already shown on left) */}
+          <div className="lg:hidden">
+            <Button asChild size="sm">
+              <Link to="/booking">Book</Link>
+            </Button>
           </div>
-        )}
+        </div>
       </nav>
     </header>
   );
