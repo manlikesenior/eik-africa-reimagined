@@ -35,11 +35,21 @@ const NewsletterForm = () => {
       } else {
         toast({ title: "Failed to subscribe. Please try again.", variant: "destructive" });
       }
-    } else {
-      toast({ title: "Thank you for subscribing!" });
-      setEmail("");
+      setLoading(false);
+      return;
+    }
+
+    // Send welcome email
+    try {
+      await supabase.functions.invoke("send-newsletter-welcome", {
+        body: { email: result.data.email }
+      });
+    } catch (emailError) {
+      console.error("Failed to send welcome email:", emailError);
     }
     
+    toast({ title: "Thank you for subscribing! Check your inbox." });
+    setEmail("");
     setLoading(false);
   };
 
