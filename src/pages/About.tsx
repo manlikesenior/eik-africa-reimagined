@@ -132,7 +132,7 @@ const About = () => {
               <h3 className="font-display text-2xl font-bold mb-4">Our Vision</h3>
               <p className="text-muted-foreground leading-relaxed">
                 To be Africa's leading travel partner, inspiring the world to explore the continent's beauty, culture, and 
-                diversity through personalized and unforgettable experiences.
+                diversity through personalized and unforgettable experiences while generating sustainable growth in the local economy.
               </p>
             </div>
             <div className="bg-background p-8 rounded-lg shadow-lg text-center">
@@ -142,7 +142,7 @@ const About = () => {
               <h3 className="font-display text-2xl font-bold mb-4">Our Mission</h3>
               <p className="text-muted-foreground leading-relaxed">
                 To deliver high-quality, innovative, and reliable travel services that exceed the expectations of local and 
-                international travelers by offering unique African experiences with professionalism, integrity, and a 
+                international travelers by offering unique African cultural experiences with professionalism, integrity, and a 
                 personal touch.
               </p>
             </div>

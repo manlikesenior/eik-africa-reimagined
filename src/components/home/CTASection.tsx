@@ -24,7 +24,7 @@ export function CTASection() {
             From wildlife encounters to beach escapes, we'll handle every detail.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
-            <Button size="lg" asChild className="text-lg px-8">
+            <Button size="lg" asChild className="text-lg px-8 bg-primary hover:bg-primary/90">
               <Link to="/booking">Book Your Safari Now</Link>
             </Button>
             <Button 

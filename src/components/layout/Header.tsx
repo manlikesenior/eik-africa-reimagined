@@ -43,8 +43,30 @@ export function Header() {
       {/* Main nav */}
       <nav className="container mx-auto px-4 py-4">
         <div className="flex items-center justify-between">
-          {/* Hamburger Menu for main navigation */}
+          {/* Logo - Left */}
+          <Link to="/" className="flex items-center">
+            <img src={logo} alt="Eika Africa Experience" className="h-24 md:h-28" />
+          </Link>
+
+          {/* Desktop Country Navigation - Center */}
+          <CountryMegaMenu />
+
+          {/* Book Now Button + Hamburger - Right */}
           <div className="flex items-center gap-4">
+            <div className="hidden lg:block">
+              <Button asChild>
+                <Link to="/booking">Book Now</Link>
+              </Button>
+            </div>
+            
+            {/* Mobile Book Button */}
+            <div className="lg:hidden">
+              <Button asChild size="sm">
+                <Link to="/booking">Book</Link>
+              </Button>
+            </div>
+
+            {/* Hamburger Menu */}
             <Sheet open={isOpen} onOpenChange={setIsOpen}>
               <SheetTrigger asChild>
                 <button
@@ -54,10 +76,10 @@ export function Header() {
                   <Menu className="w-6 h-6" />
                 </button>
               </SheetTrigger>
-              <SheetContent side="left" className="w-80 bg-background">
+              <SheetContent side="right" className="w-80 bg-background">
                 <SheetHeader>
                   <SheetTitle className="text-left">
-                    <img src={logo} alt="Eika Africa Experience" className="h-16" />
+                    <img src={logo} alt="Eika Africa Experience" className="h-20" />
                   </SheetTitle>
                 </SheetHeader>
                 <div className="flex flex-col gap-2 mt-8">
@@ -95,27 +117,6 @@ export function Header() {
                 </div>
               </SheetContent>
             </Sheet>
-
-            <Link to="/" className="flex items-center">
-              <img src={logo} alt="Eika Africa Experience" className="h-16 md:h-20" />
-            </Link>
-          </div>
-
-          {/* Desktop Country Navigation - Center */}
-          <CountryMegaMenu />
-
-          {/* Book Now Button - Right */}
-          <div className="hidden lg:block">
-            <Button asChild>
-              <Link to="/booking">Book Now</Link>
-            </Button>
-          </div>
-
-          {/* Mobile: Show only hamburger (already shown on left) */}
-          <div className="lg:hidden">
-            <Button asChild size="sm">
-              <Link to="/booking">Book</Link>
-            </Button>
           </div>
         </div>
       </nav>
