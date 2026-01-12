@@ -3,6 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
+import { CheckCircle } from "lucide-react";
 import { z } from "zod";
 
 const emailSchema = z.object({
@@ -12,6 +13,7 @@ const emailSchema = z.object({
 const NewsletterForm = () => {
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
+  const [subscribed, setSubscribed] = useState(false);
   const { toast } = useToast();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -48,10 +50,22 @@ const NewsletterForm = () => {
       console.error("Failed to send welcome email:", emailError);
     }
     
-    toast({ title: "Thank you for subscribing! Check your inbox." });
+    setSubscribed(true);
     setEmail("");
     setLoading(false);
   };
+
+  if (subscribed) {
+    return (
+      <div className="space-y-3 animate-fade-in">
+        <h4 className="font-display text-lg font-semibold">Newsletter</h4>
+        <div className="flex items-center gap-3 text-footer-foreground/80 animate-scale-in">
+          <CheckCircle className="w-5 h-5 text-primary shrink-0" />
+          <p className="text-sm">Thank you for subscribing! Check your inbox for a welcome email.</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <form onSubmit={handleSubmit} className="space-y-3">
@@ -65,10 +79,14 @@ const NewsletterForm = () => {
           placeholder="Your email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          className="bg-footer-foreground/10 border-footer-foreground/20 text-footer-foreground placeholder:text-footer-foreground/50"
+          className="bg-footer-foreground/10 border-footer-foreground/20 text-footer-foreground placeholder:text-footer-foreground/50 transition-all duration-200 focus:ring-2 focus:ring-primary/50"
           required
         />
-        <Button type="submit" disabled={loading} className="shrink-0">
+        <Button 
+          type="submit" 
+          disabled={loading} 
+          className="shrink-0 transition-all duration-200"
+        >
           {loading ? "..." : "Subscribe"}
         </Button>
       </div>
