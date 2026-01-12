@@ -170,18 +170,18 @@ const Booking = () => {
       <Layout>
         <section className="py-24 bg-background">
           <div className="container mx-auto px-4">
-            <div className="max-w-2xl mx-auto text-center space-y-6">
-              <div className="inline-flex items-center justify-center w-20 h-20 bg-accent/20 rounded-full">
+            <div className="max-w-2xl mx-auto text-center space-y-6 animate-fade-in">
+              <div className="inline-flex items-center justify-center w-20 h-20 bg-accent/20 rounded-full animate-scale-in">
                 <CheckCircle className="w-10 h-10 text-accent" />
               </div>
-              <h1 className="font-display text-3xl md:text-4xl font-bold">
+              <h1 className="font-display text-3xl md:text-4xl font-bold animate-fade-in" style={{ animationDelay: '0.1s' }}>
                 Thank You for Your Inquiry!
               </h1>
-              <p className="text-muted-foreground">
+              <p className="text-muted-foreground animate-fade-in" style={{ animationDelay: '0.2s' }}>
                 We've received your booking request and will get back to you within 24 hours. 
                 A confirmation email has been sent to {formData.email}.
               </p>
-              <div className="pt-4">
+              <div className="pt-4 animate-fade-in" style={{ animationDelay: '0.3s' }}>
                 <Button asChild>
                   <a href="/">Return to Homepage</a>
                 </Button>
