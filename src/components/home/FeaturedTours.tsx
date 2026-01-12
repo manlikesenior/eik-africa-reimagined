@@ -13,6 +13,7 @@ interface Tour {
   duration: string;
   destinations: string[];
   image_url: string;
+  price: number | null;
 }
 
 export function FeaturedTours() {
@@ -23,7 +24,7 @@ export function FeaturedTours() {
     async function fetchTours() {
       const { data, error } = await supabase
         .from("tours")
-        .select("id, title, slug, description, duration, destinations, image_url")
+        .select("id, title, slug, description, duration, destinations, image_url, price")
         .eq("is_featured", true)
         .eq("is_published", true)
         .limit(3);
@@ -54,7 +55,7 @@ export function FeaturedTours() {
             Popular Destinations
           </p>
           <h2 className="font-display text-3xl md:text-4xl font-bold text-foreground">
-            Featured Safari Experiences
+            Featured Experiences
           </h2>
         </div>
 
@@ -73,6 +74,11 @@ export function FeaturedTours() {
                 <div className="absolute top-4 left-4 bg-primary text-primary-foreground px-3 py-1 rounded-full text-sm font-medium">
                   Featured
                 </div>
+                {tour.price && (
+                  <div className="absolute top-4 right-4 bg-background/95 text-foreground px-3 py-1 rounded-full text-sm font-semibold shadow-md">
+                    From ${tour.price.toLocaleString()} pps
+                  </div>
+                )}
               </div>
               <CardContent className="p-6 space-y-4">
                 <h3 className="font-display text-xl font-semibold group-hover:text-primary transition-colors">

@@ -18,6 +18,7 @@ interface Tour {
   image_url: string;
   highlights: string[];
   is_featured: boolean;
+  price: number | null;
 }
 
 const features = [
@@ -247,6 +248,11 @@ const Experiences = () => {
                         </span>
                       )}
                     </div>
+                    {tour.price && (
+                      <div className="absolute top-4 right-4 bg-background/95 text-foreground px-3 py-1 rounded-full text-sm font-semibold shadow-md">
+                        From ${tour.price.toLocaleString()} pps
+                      </div>
+                    )}
                   </div>
                   <CardContent className="p-6 space-y-4">
                     <h3 className="font-display text-xl font-semibold group-hover:text-primary transition-colors">

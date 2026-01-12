@@ -10,7 +10,7 @@ export function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">
           {/* Logo & About */}
           <div className="lg:col-span-2 space-y-4">
-            <img src={logo} alt="Eika Africa Experience" className="h-16 brightness-0 invert opacity-90" />
+            <img src={logo} alt="Eika Africa Experience" className="h-24 brightness-0 invert opacity-90" />
             <p className="text-footer-foreground/80 text-sm leading-relaxed">
               Eika Africa Experience is your trusted partner for unforgettable African adventures. 
               From wildlife safaris to beach getaways, we create memories that last a lifetime.
