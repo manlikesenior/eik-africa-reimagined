@@ -99,6 +99,7 @@ export type Database = {
           last_name: string
           message: string | null
           phone: string | null
+          selected_tier: string | null
           services: string[] | null
           special_requirements: string | null
           status: string
@@ -123,6 +124,7 @@ export type Database = {
           last_name: string
           message?: string | null
           phone?: string | null
+          selected_tier?: string | null
           services?: string[] | null
           special_requirements?: string | null
           status?: string
@@ -147,6 +149,7 @@ export type Database = {
           last_name?: string
           message?: string | null
           phone?: string | null
+          selected_tier?: string | null
           services?: string[] | null
           special_requirements?: string | null
           status?: string
@@ -221,6 +224,7 @@ export type Database = {
           overview: string | null
           price: number | null
           price_note: string | null
+          pricing_tiers: Json | null
           slug: string
           title: string
           updated_at: string
@@ -243,6 +247,7 @@ export type Database = {
           overview?: string | null
           price?: number | null
           price_note?: string | null
+          pricing_tiers?: Json | null
           slug: string
           title: string
           updated_at?: string
@@ -265,6 +270,7 @@ export type Database = {
           overview?: string | null
           price?: number | null
           price_note?: string | null
+          pricing_tiers?: Json | null
           slug?: string
           title?: string
           updated_at?: string

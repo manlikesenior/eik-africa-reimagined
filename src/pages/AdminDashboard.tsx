@@ -45,6 +45,7 @@ interface Tour {
   exclusions: string[] | null;
   itinerary: unknown;
   category: string | null;
+  pricing_tiers: unknown;
   created_at: string;
 }
 

@@ -5,6 +5,7 @@ import { Clock, MapPin, Check, X, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
+import { PricingTierSelector, PricingTiers } from "@/components/tours/PricingTierSelector";
 
 interface ItineraryDay {
   day: number;
@@ -28,6 +29,7 @@ interface Tour {
   itinerary: ItineraryDay[];
   image_url: string;
   gallery: string[];
+  pricing_tiers: PricingTiers | null;
 }
 
 interface RelatedTour {
@@ -43,6 +45,7 @@ const TourDetail = () => {
   const [tour, setTour] = useState<Tour | null>(null);
   const [relatedTours, setRelatedTours] = useState<RelatedTour[]>([]);
   const [loading, setLoading] = useState(true);
+  const [selectedTier, setSelectedTier] = useState<"silver" | "gold" | "platinum">("silver");
 
   useEffect(() => {
     async function fetchTour() {
@@ -56,14 +59,22 @@ const TourDetail = () => {
         .maybeSingle();
 
       if (!error && data) {
-        // Parse itinerary from JSONB
+        // Parse itinerary and pricing tiers from JSONB
         const parsedTour = {
           ...data,
           itinerary: Array.isArray(data.itinerary) 
             ? (data.itinerary as unknown as ItineraryDay[])
-            : []
+            : [],
+          pricing_tiers: data.pricing_tiers as PricingTiers | null
         };
         setTour(parsedTour);
+        
+        // Set default tier to lowest available
+        if (parsedTour.pricing_tiers) {
+          if (parsedTour.pricing_tiers.silver) setSelectedTier("silver");
+          else if (parsedTour.pricing_tiers.gold) setSelectedTier("gold");
+          else if (parsedTour.pricing_tiers.platinum) setSelectedTier("platinum");
+        }
 
         // Fetch related tours
         const { data: related } = await supabase
@@ -134,7 +145,7 @@ const TourDetail = () => {
             {tour.title}
           </h1>
           <Button size="lg" asChild>
-            <Link to={`/booking?tour=${tour.slug}`}>Book This Tour</Link>
+            <Link to={`/booking?tour=${tour.slug}&tier=${selectedTier}`}>Book This Tour</Link>
           </Button>
         </div>
       </section>
@@ -249,19 +260,40 @@ const TourDetail = () => {
           <div className="space-y-6">
             <Card className="sticky top-32">
               <CardContent className="p-6 space-y-6">
-                <div className="text-center">
-                  <p className="text-sm text-muted-foreground mb-1">Starting from</p>
-                  {tour.price ? (
-                    <p className="font-display text-3xl font-bold text-primary">
-                      ${tour.price.toLocaleString()}
-                    </p>
-                  ) : (
-                    <p className="font-display text-xl font-bold text-primary">
-                      {tour.price_note || "Contact for pricing"}
-                    </p>
-                  )}
-                  <p className="text-xs text-muted-foreground mt-1">per person</p>
-                </div>
+                {/* Pricing Tier Selector */}
+                {tour.pricing_tiers && (tour.pricing_tiers.silver || tour.pricing_tiers.gold || tour.pricing_tiers.platinum) ? (
+                  <>
+                    <PricingTierSelector
+                      tiers={tour.pricing_tiers}
+                      selectedTier={selectedTier}
+                      onTierSelect={setSelectedTier}
+                      fallbackPrice={tour.price}
+                    />
+                    <div className="pt-2 border-t">
+                      <div className="text-center">
+                        <p className="text-sm text-muted-foreground mb-1">Selected Package</p>
+                        <p className="font-display text-3xl font-bold text-primary">
+                          ${tour.pricing_tiers[selectedTier]?.price.toLocaleString() || tour.price?.toLocaleString() || "—"}
+                        </p>
+                        <p className="text-xs text-muted-foreground mt-1">per person sharing</p>
+                      </div>
+                    </div>
+                  </>
+                ) : (
+                  <div className="text-center">
+                    <p className="text-sm text-muted-foreground mb-1">Starting from</p>
+                    {tour.price ? (
+                      <p className="font-display text-3xl font-bold text-primary">
+                        ${tour.price.toLocaleString()}
+                      </p>
+                    ) : (
+                      <p className="font-display text-xl font-bold text-primary">
+                        {tour.price_note || "Contact for pricing"}
+                      </p>
+                    )}
+                    <p className="text-xs text-muted-foreground mt-1">per person</p>
+                  </div>
+                )}
 
                 <div className="space-y-3 text-sm">
                   <div className="flex justify-between">
@@ -277,7 +309,7 @@ const TourDetail = () => {
                 </div>
 
                 <Button className="w-full" size="lg" asChild>
-                  <Link to={`/booking?tour=${tour.slug}`}>Book This Tour</Link>
+                  <Link to={`/booking?tour=${tour.slug}&tier=${selectedTier}`}>Book This Tour</Link>
                 </Button>
                 <Button variant="outline" className="w-full" asChild>
                   <Link to="/booking">Inquire Now</Link>
@@ -335,7 +367,7 @@ const TourDetail = () => {
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button size="lg" variant="secondary" asChild>
-              <Link to={`/booking?tour=${tour.slug}`}>Book Now</Link>
+              <Link to={`/booking?tour=${tour.slug}&tier=${selectedTier}`}>Book Now</Link>
             </Button>
             <Button 
               size="lg" 
