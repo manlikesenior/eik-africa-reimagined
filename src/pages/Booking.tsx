@@ -48,12 +48,16 @@ interface Tour {
 const Booking = () => {
   const [searchParams] = useSearchParams();
   const preselectedTour = searchParams.get("tour");
+  const preselectedTier = searchParams.get("tier") as "silver" | "gold" | "platinum" | null;
   const { toast } = useToast();
 
   const [tours, setTours] = useState<Tour[]>([]);
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [selectedServices, setSelectedServices] = useState<string[]>([]);
+  const [selectedTier, setSelectedTier] = useState<"silver" | "gold" | "platinum">(
+    preselectedTier || "silver"
+  );
 
   const [formData, setFormData] = useState({
     firstName: "",
@@ -121,7 +125,8 @@ const Booking = () => {
         budget: formData.budget,
         services: selectedServices,
         special_requirements: formData.specialRequirements,
-        message: formData.message
+        message: formData.message,
+        selected_tier: formData.tourSlug ? selectedTier : null
       });
 
       if (insertError) throw insertError;
@@ -144,7 +149,8 @@ const Booking = () => {
           budget: formData.budget,
           services: selectedServices,
           specialRequirements: formData.specialRequirements,
-          message: formData.message
+          message: formData.message,
+          selectedTier: formData.tourSlug ? selectedTier : null
         }
       });
 
@@ -297,6 +303,24 @@ const Booking = () => {
                         </SelectContent>
                       </Select>
                     </div>
+                    {formData.tourSlug && (
+                      <div className="space-y-2">
+                        <Label>Package Level</Label>
+                        <Select 
+                          value={selectedTier} 
+                          onValueChange={(v) => setSelectedTier(v as "silver" | "gold" | "platinum")}
+                        >
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select package..." />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="silver">Silver - Essential Comfort</SelectItem>
+                            <SelectItem value="gold">Gold - Premium Experience</SelectItem>
+                            <SelectItem value="platinum">Platinum - Ultimate Luxury</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    )}
                     <div className="space-y-2">
                       <Label>Travel Theme</Label>
                       <Select 

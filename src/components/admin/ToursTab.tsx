@@ -22,6 +22,18 @@ interface ItineraryDay {
   accommodation?: string;
 }
 
+interface PricingTier {
+  price: number;
+  description: string;
+  accommodation_level: string;
+}
+
+interface PricingTiers {
+  silver?: PricingTier;
+  gold?: PricingTier;
+  platinum?: PricingTier;
+}
+
 interface Tour {
   id: string;
   title: string;
@@ -41,6 +53,7 @@ interface Tour {
   exclusions: string[] | null;
   itinerary: unknown;
   category: string | null;
+  pricing_tiers: unknown;
   created_at: string;
 }
 
@@ -85,7 +98,12 @@ const ToursTab = ({ tours, loading, onRefresh }: ToursTabProps) => {
     inclusions: "",
     exclusions: "",
     category: "",
-    itinerary: [] as ItineraryDay[]
+    itinerary: [] as ItineraryDay[],
+    pricingTiers: {
+      silver: { enabled: false, price: "", description: "", accommodation_level: "" },
+      gold: { enabled: false, price: "", description: "", accommodation_level: "" },
+      platinum: { enabled: false, price: "", description: "", accommodation_level: "" }
+    }
   });
   const [newGalleryUrl, setNewGalleryUrl] = useState("");
   const { toast } = useToast();
@@ -108,7 +126,12 @@ const ToursTab = ({ tours, loading, onRefresh }: ToursTabProps) => {
       inclusions: "",
       exclusions: "",
       category: "",
-      itinerary: []
+      itinerary: [],
+      pricingTiers: {
+        silver: { enabled: false, price: "", description: "", accommodation_level: "" },
+        gold: { enabled: false, price: "", description: "", accommodation_level: "" },
+        platinum: { enabled: false, price: "", description: "", accommodation_level: "" }
+      }
     });
     setEditingTour(null);
     setNewGalleryUrl("");
@@ -119,6 +142,8 @@ const ToursTab = ({ tours, loading, onRefresh }: ToursTabProps) => {
     const itinerary = Array.isArray(tour.itinerary) 
       ? tour.itinerary as ItineraryDay[]
       : [];
+    
+    const pricingTiers = tour.pricing_tiers as PricingTiers | null;
     
     setFormData({
       title: tour.title,
@@ -137,13 +162,57 @@ const ToursTab = ({ tours, loading, onRefresh }: ToursTabProps) => {
       inclusions: tour.inclusions?.join("\n") || "",
       exclusions: tour.exclusions?.join("\n") || "",
       category: tour.category || "",
-      itinerary
+      itinerary,
+      pricingTiers: {
+        silver: { 
+          enabled: !!pricingTiers?.silver, 
+          price: pricingTiers?.silver?.price?.toString() || "", 
+          description: pricingTiers?.silver?.description || "",
+          accommodation_level: pricingTiers?.silver?.accommodation_level || ""
+        },
+        gold: { 
+          enabled: !!pricingTiers?.gold, 
+          price: pricingTiers?.gold?.price?.toString() || "", 
+          description: pricingTiers?.gold?.description || "",
+          accommodation_level: pricingTiers?.gold?.accommodation_level || ""
+        },
+        platinum: { 
+          enabled: !!pricingTiers?.platinum, 
+          price: pricingTiers?.platinum?.price?.toString() || "", 
+          description: pricingTiers?.platinum?.description || "",
+          accommodation_level: pricingTiers?.platinum?.accommodation_level || ""
+        }
+      }
     });
     setIsDialogOpen(true);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Build pricing tiers object
+    const pricingTiers: PricingTiers = {};
+    if (formData.pricingTiers.silver.enabled && formData.pricingTiers.silver.price) {
+      pricingTiers.silver = {
+        price: parseFloat(formData.pricingTiers.silver.price),
+        description: formData.pricingTiers.silver.description,
+        accommodation_level: formData.pricingTiers.silver.accommodation_level
+      };
+    }
+    if (formData.pricingTiers.gold.enabled && formData.pricingTiers.gold.price) {
+      pricingTiers.gold = {
+        price: parseFloat(formData.pricingTiers.gold.price),
+        description: formData.pricingTiers.gold.description,
+        accommodation_level: formData.pricingTiers.gold.accommodation_level
+      };
+    }
+    if (formData.pricingTiers.platinum.enabled && formData.pricingTiers.platinum.price) {
+      pricingTiers.platinum = {
+        price: parseFloat(formData.pricingTiers.platinum.price),
+        description: formData.pricingTiers.platinum.description,
+        accommodation_level: formData.pricingTiers.platinum.accommodation_level
+      };
+    }
     
     const tourData = {
       title: formData.title,
@@ -162,7 +231,8 @@ const ToursTab = ({ tours, loading, onRefresh }: ToursTabProps) => {
       inclusions: formData.inclusions ? formData.inclusions.split("\n").filter(i => i.trim()) : null,
       exclusions: formData.exclusions ? formData.exclusions.split("\n").filter(e => e.trim()) : null,
       category: formData.category || null,
-      itinerary: formData.itinerary.length > 0 ? JSON.parse(JSON.stringify(formData.itinerary)) : null
+      itinerary: formData.itinerary.length > 0 ? JSON.parse(JSON.stringify(formData.itinerary)) : null,
+      pricing_tiers: Object.keys(pricingTiers).length > 0 ? JSON.parse(JSON.stringify(pricingTiers)) : null
     };
 
     if (editingTour) {
@@ -287,8 +357,9 @@ const ToursTab = ({ tours, loading, onRefresh }: ToursTabProps) => {
             </DialogHeader>
             <form onSubmit={handleSubmit}>
               <Tabs defaultValue="basic" className="w-full">
-                <TabsList className="grid w-full grid-cols-4">
+                <TabsList className="grid w-full grid-cols-5">
                   <TabsTrigger value="basic">Basic Info</TabsTrigger>
+                  <TabsTrigger value="pricing">Pricing</TabsTrigger>
                   <TabsTrigger value="details">Details</TabsTrigger>
                   <TabsTrigger value="itinerary">Itinerary</TabsTrigger>
                   <TabsTrigger value="gallery">Gallery</TabsTrigger>
@@ -361,6 +432,199 @@ const ToursTab = ({ tours, loading, onRefresh }: ToursTabProps) => {
                       <Switch id="is_featured" checked={formData.is_featured} onCheckedChange={(checked) => setFormData({...formData, is_featured: checked})} />
                       <Label htmlFor="is_featured">Featured</Label>
                     </div>
+                  </div>
+                </TabsContent>
+
+                <TabsContent value="pricing" className="space-y-6 mt-4">
+                  <div>
+                    <Label className="text-base font-semibold">Legacy Pricing (Fallback)</Label>
+                    <p className="text-sm text-muted-foreground mb-3">Used when no tier pricing is set</p>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <Label htmlFor="price">Base Price (USD)</Label>
+                        <Input id="price" type="number" value={formData.price} onChange={(e) => setFormData({...formData, price: e.target.value})} />
+                      </div>
+                      <div>
+                        <Label htmlFor="price_note">Price Note</Label>
+                        <Input id="price_note" value={formData.price_note} onChange={(e) => setFormData({...formData, price_note: e.target.value})} placeholder="e.g., per person sharing" />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="border-t pt-6">
+                    <Label className="text-base font-semibold">Tiered Pricing</Label>
+                    <p className="text-sm text-muted-foreground mb-4">Set up Silver, Gold, and Platinum packages</p>
+                    
+                    {/* Silver Tier */}
+                    <Card className="mb-4">
+                      <CardHeader className="pb-2">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <div className="w-4 h-4 rounded-full bg-slate-500" />
+                            <CardTitle className="text-sm">Silver Package</CardTitle>
+                          </div>
+                          <Switch 
+                            checked={formData.pricingTiers.silver.enabled} 
+                            onCheckedChange={(checked) => setFormData({
+                              ...formData, 
+                              pricingTiers: { ...formData.pricingTiers, silver: { ...formData.pricingTiers.silver, enabled: checked }}
+                            })} 
+                          />
+                        </div>
+                      </CardHeader>
+                      {formData.pricingTiers.silver.enabled && (
+                        <CardContent className="grid grid-cols-3 gap-3">
+                          <div>
+                            <Label>Price (USD)</Label>
+                            <Input 
+                              type="number" 
+                              value={formData.pricingTiers.silver.price} 
+                              onChange={(e) => setFormData({
+                                ...formData, 
+                                pricingTiers: { ...formData.pricingTiers, silver: { ...formData.pricingTiers.silver, price: e.target.value }}
+                              })}
+                              placeholder="e.g., 1200"
+                            />
+                          </div>
+                          <div>
+                            <Label>Accommodation Level</Label>
+                            <Input 
+                              value={formData.pricingTiers.silver.accommodation_level} 
+                              onChange={(e) => setFormData({
+                                ...formData, 
+                                pricingTiers: { ...formData.pricingTiers, silver: { ...formData.pricingTiers.silver, accommodation_level: e.target.value }}
+                              })}
+                              placeholder="e.g., Budget camps"
+                            />
+                          </div>
+                          <div>
+                            <Label>Description</Label>
+                            <Input 
+                              value={formData.pricingTiers.silver.description} 
+                              onChange={(e) => setFormData({
+                                ...formData, 
+                                pricingTiers: { ...formData.pricingTiers, silver: { ...formData.pricingTiers.silver, description: e.target.value }}
+                              })}
+                              placeholder="e.g., Essential comfort"
+                            />
+                          </div>
+                        </CardContent>
+                      )}
+                    </Card>
+
+                    {/* Gold Tier */}
+                    <Card className="mb-4">
+                      <CardHeader className="pb-2">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <div className="w-4 h-4 rounded-full bg-amber-500" />
+                            <CardTitle className="text-sm">Gold Package</CardTitle>
+                          </div>
+                          <Switch 
+                            checked={formData.pricingTiers.gold.enabled} 
+                            onCheckedChange={(checked) => setFormData({
+                              ...formData, 
+                              pricingTiers: { ...formData.pricingTiers, gold: { ...formData.pricingTiers.gold, enabled: checked }}
+                            })} 
+                          />
+                        </div>
+                      </CardHeader>
+                      {formData.pricingTiers.gold.enabled && (
+                        <CardContent className="grid grid-cols-3 gap-3">
+                          <div>
+                            <Label>Price (USD)</Label>
+                            <Input 
+                              type="number" 
+                              value={formData.pricingTiers.gold.price} 
+                              onChange={(e) => setFormData({
+                                ...formData, 
+                                pricingTiers: { ...formData.pricingTiers, gold: { ...formData.pricingTiers.gold, price: e.target.value }}
+                              })}
+                              placeholder="e.g., 2000"
+                            />
+                          </div>
+                          <div>
+                            <Label>Accommodation Level</Label>
+                            <Input 
+                              value={formData.pricingTiers.gold.accommodation_level} 
+                              onChange={(e) => setFormData({
+                                ...formData, 
+                                pricingTiers: { ...formData.pricingTiers, gold: { ...formData.pricingTiers.gold, accommodation_level: e.target.value }}
+                              })}
+                              placeholder="e.g., Mid-range lodges"
+                            />
+                          </div>
+                          <div>
+                            <Label>Description</Label>
+                            <Input 
+                              value={formData.pricingTiers.gold.description} 
+                              onChange={(e) => setFormData({
+                                ...formData, 
+                                pricingTiers: { ...formData.pricingTiers, gold: { ...formData.pricingTiers.gold, description: e.target.value }}
+                              })}
+                              placeholder="e.g., Premium experience"
+                            />
+                          </div>
+                        </CardContent>
+                      )}
+                    </Card>
+
+                    {/* Platinum Tier */}
+                    <Card>
+                      <CardHeader className="pb-2">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <div className="w-4 h-4 rounded-full bg-violet-500" />
+                            <CardTitle className="text-sm">Platinum Package</CardTitle>
+                          </div>
+                          <Switch 
+                            checked={formData.pricingTiers.platinum.enabled} 
+                            onCheckedChange={(checked) => setFormData({
+                              ...formData, 
+                              pricingTiers: { ...formData.pricingTiers, platinum: { ...formData.pricingTiers.platinum, enabled: checked }}
+                            })} 
+                          />
+                        </div>
+                      </CardHeader>
+                      {formData.pricingTiers.platinum.enabled && (
+                        <CardContent className="grid grid-cols-3 gap-3">
+                          <div>
+                            <Label>Price (USD)</Label>
+                            <Input 
+                              type="number" 
+                              value={formData.pricingTiers.platinum.price} 
+                              onChange={(e) => setFormData({
+                                ...formData, 
+                                pricingTiers: { ...formData.pricingTiers, platinum: { ...formData.pricingTiers.platinum, price: e.target.value }}
+                              })}
+                              placeholder="e.g., 3500"
+                            />
+                          </div>
+                          <div>
+                            <Label>Accommodation Level</Label>
+                            <Input 
+                              value={formData.pricingTiers.platinum.accommodation_level} 
+                              onChange={(e) => setFormData({
+                                ...formData, 
+                                pricingTiers: { ...formData.pricingTiers, platinum: { ...formData.pricingTiers.platinum, accommodation_level: e.target.value }}
+                              })}
+                              placeholder="e.g., Luxury 5-star lodges"
+                            />
+                          </div>
+                          <div>
+                            <Label>Description</Label>
+                            <Input 
+                              value={formData.pricingTiers.platinum.description} 
+                              onChange={(e) => setFormData({
+                                ...formData, 
+                                pricingTiers: { ...formData.pricingTiers, platinum: { ...formData.pricingTiers.platinum, description: e.target.value }}
+                              })}
+                              placeholder="e.g., Ultimate luxury"
+                            />
+                          </div>
+                        </CardContent>
+                      )}
+                    </Card>
                   </div>
                 </TabsContent>
 
