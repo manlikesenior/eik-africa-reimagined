@@ -1,13 +1,12 @@
 import { Link } from "react-router-dom";
 import { Phone, Mail, MapPin, Facebook, Instagram, Twitter } from "lucide-react";
 import logo from "@/assets/logo.png";
-import NewsletterForm from "@/components/NewsletterForm";
 
 export function Footer() {
   return (
     <footer className="bg-footer text-footer-foreground">
       <div className="container mx-auto px-4 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {/* Logo & About */}
           <div className="lg:col-span-2 space-y-4">
             <img src={logo} alt="Eika Africa Experience" className="h-24 brightness-0 invert opacity-90" />
@@ -62,6 +61,11 @@ export function Footer() {
                   Blog
                 </Link>
               </li>
+              <li>
+                <Link to="/privacy-policy" className="text-footer-foreground/80 hover:text-primary transition-colors text-sm">
+                  Privacy Policy
+                </Link>
+              </li>
             </ul>
           </div>
 
@@ -92,11 +96,6 @@ export function Footer() {
                 </a>
               </li>
             </ul>
-          </div>
-
-          {/* Newsletter */}
-          <div>
-            <NewsletterForm />
           </div>
         </div>
 

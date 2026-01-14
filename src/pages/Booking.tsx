@@ -58,6 +58,7 @@ const Booking = () => {
   const [selectedTier, setSelectedTier] = useState<"silver" | "gold" | "platinum">(
     preselectedTier || "silver"
   );
+  const [privacyConsent, setPrivacyConsent] = useState(false);
 
   const [formData, setFormData] = useState({
     firstName: "",
@@ -457,7 +458,35 @@ const Booking = () => {
                   </div>
                 </div>
 
-                <Button type="submit" size="lg" className="w-full md:w-auto" disabled={loading}>
+                {/* Privacy Consent */}
+                <div className="space-y-4">
+                  <label className="flex items-start gap-3 cursor-pointer">
+                    <Checkbox
+                      checked={privacyConsent}
+                      onCheckedChange={(checked) => setPrivacyConsent(checked as boolean)}
+                      className="mt-1"
+                      required
+                    />
+                    <span className="text-sm text-muted-foreground">
+                      I agree to the{" "}
+                      <a 
+                        href="/privacy-policy" 
+                        target="_blank" 
+                        className="text-primary hover:underline"
+                      >
+                        Privacy Policy
+                      </a>{" "}
+                      and consent to Eika Africa Experience processing my data to arrange my tour. *
+                    </span>
+                  </label>
+                </div>
+
+                <Button 
+                  type="submit" 
+                  size="lg" 
+                  className="w-full md:w-auto" 
+                  disabled={loading || !privacyConsent}
+                >
                   {loading ? "Submitting..." : "Submit Inquiry"}
                 </Button>
               </form>
