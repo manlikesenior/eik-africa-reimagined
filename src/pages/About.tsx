@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { Target, Eye, Heart, Shield, Users, Award, Lightbulb, Leaf, Compass, Briefcase, GraduationCap, Church, Users2, Building } from "lucide-react";
 import aboutHeroImage from "@/assets/about-hero.jpg";
+import { ReviewsSection } from "@/components/home/ReviewsSection";
 
 const values = [
   {
@@ -246,6 +247,9 @@ const About = () => {
           </div>
         </div>
       </section>
+
+      {/* Reviews */}
+      <ReviewsSection />
 
       {/* CTA */}
       <section className="py-16 bg-primary text-primary-foreground">
