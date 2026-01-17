@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
+import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
+import { ErrorBoundary } from "@/components/ErrorBoundary";
 import AdminHeader from "@/components/admin/AdminHeader";
 import InquiriesTab from "@/components/admin/InquiriesTab";
 import ToursTab from "@/components/admin/ToursTab";
@@ -87,92 +89,135 @@ const AdminDashboard = () => {
   const { toast } = useToast();
 
   useEffect(() => {
-    checkAuth();
-  }, []);
-
-  const checkAuth = async () => {
-    const { data: { session } } = await supabase.auth.getSession();
-    if (!session) {
-      navigate("/admin");
-      return;
-    }
-
-    const { data: adminData } = await supabase
-      .from("admin_users")
-      .select("id")
-      .eq("user_id", session.user.id)
-      .maybeSingle();
-
-    if (!adminData) {
-      await supabase.auth.signOut();
-      navigate("/admin");
-      return;
-    }
-
-    // Fetch all data
+    // Update document title
+    document.title = "Admin Dashboard | Eika Africa Experience";
+    
+    // Fetch all data on mount
     fetchInquiries();
     fetchTours();
     fetchBlogs();
     fetchSubscribers();
-  };
+
+    return () => {
+      // Reset title on unmount
+      document.title = "Eika Africa Experience";
+    };
+  }, []);
 
   const fetchInquiries = async () => {
-    const { data, error } = await supabase
-      .from("booking_inquiries")
-      .select("*")
-      .order("created_at", { ascending: false });
+    try {
+      const { data, error } = await supabase
+        .from("booking_inquiries")
+        .select("*")
+        .order("created_at", { ascending: false });
 
-    if (!error && data) {
-      setInquiries(data);
+      if (error) throw error;
+      
+      if (data) {
+        setInquiries(data);
+      }
+    } catch (error: any) {
+      console.error("Error fetching inquiries:", error);
+      toast({ 
+        title: "Failed to load inquiries", 
+        description: error.message, 
+        variant: "destructive" 
+      });
+    } finally {
+      setLoadingInquiries(false);
     }
-    setLoadingInquiries(false);
   };
 
   const fetchTours = async () => {
-    const { data, error } = await supabase
-      .from("tours")
-      .select("*")
-      .order("created_at", { ascending: false });
+    try {
+      const { data, error } = await supabase
+        .from("tours")
+        .select("*")
+        .order("created_at", { ascending: false });
 
-    if (!error && data) {
-      setTours(data);
+      if (error) throw error;
+      
+      if (data) {
+        setTours(data);
+      }
+    } catch (error: any) {
+      console.error("Error fetching tours:", error);
+      toast({ 
+        title: "Failed to load tours", 
+        description: error.message, 
+        variant: "destructive" 
+      });
+    } finally {
+      setLoadingTours(false);
     }
-    setLoadingTours(false);
   };
 
   const fetchBlogs = async () => {
-    const { data, error } = await supabase
-      .from("blogs")
-      .select("*")
-      .order("created_at", { ascending: false });
+    try {
+      const { data, error } = await supabase
+        .from("blogs")
+        .select("*")
+        .order("created_at", { ascending: false });
 
-    if (!error && data) {
-      setBlogs(data);
+      if (error) throw error;
+      
+      if (data) {
+        setBlogs(data);
+      }
+    } catch (error: any) {
+      console.error("Error fetching blogs:", error);
+      toast({ 
+        title: "Failed to load blogs", 
+        description: error.message, 
+        variant: "destructive" 
+      });
+    } finally {
+      setLoadingBlogs(false);
     }
-    setLoadingBlogs(false);
   };
 
   const fetchSubscribers = async () => {
-    const { data, error } = await supabase
-      .from("email_subscribers")
-      .select("*")
-      .order("subscribed_at", { ascending: false });
+    try {
+      const { data, error } = await supabase
+        .from("email_subscribers")
+        .select("*")
+        .order("subscribed_at", { ascending: false });
 
-    if (!error && data) {
-      setSubscribers(data);
+      if (error) throw error;
+      
+      if (data) {
+        setSubscribers(data);
+      }
+    } catch (error: any) {
+      console.error("Error fetching subscribers:", error);
+      toast({ 
+        title: "Failed to load subscribers", 
+        description: error.message, 
+        variant: "destructive" 
+      });
+    } finally {
+      setLoadingSubscribers(false);
     }
-    setLoadingSubscribers(false);
   };
 
   const updateInquiryStatus = async (id: string, status: string) => {
-    const { error } = await supabase
-      .from("booking_inquiries")
-      .update({ status })
-      .eq("id", id);
+    try {
+      const { error } = await supabase
+        .from("booking_inquiries")
+        .update({ status })
+        .eq("id", id);
 
-    if (!error) {
+      if (error) throw error;
+
       setInquiries(inquiries.map(i => i.id === id ? { ...i, status } : i));
-      toast({ title: "Status updated" });
+      toast({ title: "Status updated successfully" });
+    } catch (error: any) {
+      console.error("Error updating status:", error);
+      toast({ 
+        title: "Failed to update status", 
+        description: error.message, 
+        variant: "destructive" 
+      });
     }
   };
 
@@ -184,72 +229,76 @@ const AdminDashboard = () => {
   const newInquiriesCount = inquiries.filter(i => i.status === "new").length;
 
   return (
-    <div className="min-h-screen bg-secondary">
-      <AdminHeader onLogout={handleLogout} />
+    <ProtectedRoute>
+      <ErrorBoundary>
+        <div className="min-h-screen bg-secondary">
+          <AdminHeader onLogout={handleLogout} />
 
-      <main className="container mx-auto px-4 py-8">
-        <div className="mb-8">
-          <h1 className="font-display text-3xl font-bold">Admin Dashboard</h1>
-          <p className="text-muted-foreground">Manage your website content</p>
+          <main className="container mx-auto px-4 py-8">
+            <div className="mb-8">
+              <h1 className="font-display text-3xl font-bold">Admin Dashboard</h1>
+              <p className="text-muted-foreground">Manage your website content</p>
+            </div>
+
+            <Tabs defaultValue="inquiries" className="space-y-6">
+              <TabsList className="grid w-full grid-cols-4 lg:w-auto lg:inline-grid">
+                <TabsTrigger value="inquiries" className="flex items-center gap-2">
+                  <MessageSquare className="w-4 h-4" />
+                  <span className="hidden sm:inline">Inquiries</span>
+                  {newInquiriesCount > 0 && (
+                    <span className="bg-primary text-primary-foreground text-xs rounded-full px-2 py-0.5">{newInquiriesCount}</span>
+                  )}
+                </TabsTrigger>
+                <TabsTrigger value="tours" className="flex items-center gap-2">
+                  <Map className="w-4 h-4" />
+                  <span className="hidden sm:inline">Tours</span>
+                </TabsTrigger>
+                <TabsTrigger value="blogs" className="flex items-center gap-2">
+                  <FileText className="w-4 h-4" />
+                  <span className="hidden sm:inline">Blogs</span>
+                </TabsTrigger>
+                <TabsTrigger value="subscribers" className="flex items-center gap-2">
+                  <Mail className="w-4 h-4" />
+                  <span className="hidden sm:inline">Subscribers</span>
+                </TabsTrigger>
+              </TabsList>
+
+              <TabsContent value="inquiries">
+                <InquiriesTab 
+                  inquiries={inquiries} 
+                  loading={loadingInquiries} 
+                  onUpdateStatus={updateInquiryStatus} 
+                />
+              </TabsContent>
+
+              <TabsContent value="tours">
+                <ToursTab 
+                  tours={tours} 
+                  loading={loadingTours} 
+                  onRefresh={fetchTours} 
+                />
+              </TabsContent>
+
+              <TabsContent value="blogs">
+                <BlogsTab 
+                  blogs={blogs} 
+                  loading={loadingBlogs} 
+                  onRefresh={fetchBlogs} 
+                />
+              </TabsContent>
+
+              <TabsContent value="subscribers">
+                <SubscribersTab 
+                  subscribers={subscribers} 
+                  loading={loadingSubscribers} 
+                  onRefresh={fetchSubscribers} 
+                />
+              </TabsContent>
+            </Tabs>
+          </main>
         </div>
-
-        <Tabs defaultValue="inquiries" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-4 lg:w-auto lg:inline-grid">
-            <TabsTrigger value="inquiries" className="flex items-center gap-2">
-              <MessageSquare className="w-4 h-4" />
-              <span className="hidden sm:inline">Inquiries</span>
-              {newInquiriesCount > 0 && (
-                <span className="bg-primary text-primary-foreground text-xs rounded-full px-2 py-0.5">{newInquiriesCount}</span>
-              )}
-            </TabsTrigger>
-            <TabsTrigger value="tours" className="flex items-center gap-2">
-              <Map className="w-4 h-4" />
-              <span className="hidden sm:inline">Tours</span>
-            </TabsTrigger>
-            <TabsTrigger value="blogs" className="flex items-center gap-2">
-              <FileText className="w-4 h-4" />
-              <span className="hidden sm:inline">Blogs</span>
-            </TabsTrigger>
-            <TabsTrigger value="subscribers" className="flex items-center gap-2">
-              <Mail className="w-4 h-4" />
-              <span className="hidden sm:inline">Subscribers</span>
-            </TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="inquiries">
-            <InquiriesTab 
-              inquiries={inquiries} 
-              loading={loadingInquiries} 
-              onUpdateStatus={updateInquiryStatus} 
-            />
-          </TabsContent>
-
-          <TabsContent value="tours">
-            <ToursTab 
-              tours={tours} 
-              loading={loadingTours} 
-              onRefresh={fetchTours} 
-            />
-          </TabsContent>
-
-          <TabsContent value="blogs">
-            <BlogsTab 
-              blogs={blogs} 
-              loading={loadingBlogs} 
-              onRefresh={fetchBlogs} 
-            />
-          </TabsContent>
-
-          <TabsContent value="subscribers">
-            <SubscribersTab 
-              subscribers={subscribers} 
-              loading={loadingSubscribers} 
-              onRefresh={fetchSubscribers} 
-            />
-          </TabsContent>
-        </Tabs>
-      </main>
-    </div>
+      </ErrorBoundary>
+    </ProtectedRoute>
   );
 };
 

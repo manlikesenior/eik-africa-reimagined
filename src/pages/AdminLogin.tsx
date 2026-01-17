@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Layout } from "@/components/layout/Layout";
 import { Button } from "@/components/ui/button";
@@ -7,13 +7,48 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { Loader2 } from "lucide-react";
 
 const AdminLogin = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [checkingAuth, setCheckingAuth] = useState(true);
   const navigate = useNavigate();
   const { toast } = useToast();
+
+  useEffect(() => {
+    document.title = "Admin Login | Eika Africa Experience";
+    checkExistingAuth();
+
+    return () => {
+      document.title = "Eika Africa Experience";
+    };
+  }, []);
+
+  const checkExistingAuth = async () => {
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      if (session) {
+        // Check if user is admin
+        const { data: adminData } = await supabase
+          .from("admin_users")
+          .select("id")
+          .eq("user_id", session.user.id)
+          .maybeSingle();
+
+        if (adminData) {
+          navigate("/admin/dashboard");
+          return;
+        }
+      }
+    } catch (error) {
+      console.error("Auth check error:", error);
+    } finally {
+      setCheckingAuth(false);
+    }
+  };
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -44,6 +79,19 @@ const AdminLogin = () => {
       setLoading(false);
     }
   };
+
+  if (checkingAuth) {
+    return (
+      <Layout>
+        <div className="min-h-[80vh] flex items-center justify-center py-12">
+          <div className="text-center space-y-4">
+            <Loader2 className="w-8 h-8 animate-spin mx-auto text-primary" />
+            <p className="text-muted-foreground">Checking authentication...</p>
+          </div>
+        </div>
+      </Layout>
+    );
+  }
 
   return (
     <Layout>
