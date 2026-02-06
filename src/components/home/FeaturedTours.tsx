@@ -110,7 +110,7 @@ export function FeaturedTours() {
 
         <div className="text-center mt-12">
           <Button size="lg" asChild>
-            <Link to="/experiences">View All Tours</Link>
+            <Link to="/experiences">View All Experiences</Link>
           </Button>
         </div>
       </div>

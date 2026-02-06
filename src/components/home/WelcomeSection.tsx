@@ -1,6 +1,7 @@
 import safariLion from "@/assets/safari-lion.jpg";
 
 export function WelcomeSection() {
+
   return (
     <section className="py-20 bg-background">
       <div className="container mx-auto px-4">
@@ -10,9 +11,7 @@ export function WelcomeSection() {
             Welcome to Eika Africa Experience
           </h2>
           <p className="text-muted-foreground text-lg leading-relaxed">
-            Your trusted gateway to authentic, unforgettable adventures across Africa and beyond. 
-            Founded on a deep passion for showcasing Africa's untamed beauty, vibrant cultures, 
-            and world-class destinations.
+            Your trusted gateway to authentic, unforgettable adventures across Africa and beyond. Founded on a deep passion for showcasing Africa's untamed beauty, vibrant cultures, and world-class destinations.
           </p>
         </div>
 

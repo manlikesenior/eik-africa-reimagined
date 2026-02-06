@@ -8,6 +8,7 @@ import InquiriesTab from "@/components/admin/InquiriesTab";
 import ToursTab from "@/components/admin/ToursTab";
 import BlogsTab from "@/components/admin/BlogsTab";
 import SubscribersTab from "@/components/admin/SubscribersTab";
+import { SupabaseConnectionTest } from "@/components/admin/SupabaseConnectionTest";
 import { MessageSquare, Map, FileText, Mail } from "lucide-react";
 import type { Json } from "@/integrations/supabase/types";
 
@@ -122,7 +123,14 @@ const AdminDashboard = () => {
       .select("*")
       .order("created_at", { ascending: false });
 
-    if (!error && data) {
+    if (error) {
+      console.error("Error fetching inquiries:", error);
+      toast({
+        title: "Failed to fetch inquiries",
+        description: error.message,
+        variant: "destructive"
+      });
+    } else if (data) {
       setInquiries(data);
     }
     setLoadingInquiries(false);
@@ -134,7 +142,15 @@ const AdminDashboard = () => {
       .select("*")
       .order("created_at", { ascending: false });
 
-    if (!error && data) {
+    if (error) {
+      console.error("Error fetching tours:", error);
+      toast({
+        title: "Failed to fetch tours",
+        description: error.message,
+        variant: "destructive"
+      });
+    } else if (data) {
+      console.log(`Fetched ${data.length} tours from database`);
       setTours(data);
     }
     setLoadingTours(false);
@@ -146,7 +162,14 @@ const AdminDashboard = () => {
       .select("*")
       .order("created_at", { ascending: false });
 
-    if (!error && data) {
+    if (error) {
+      console.error("Error fetching blogs:", error);
+      toast({
+        title: "Failed to fetch blogs",
+        description: error.message,
+        variant: "destructive"
+      });
+    } else if (data) {
       setBlogs(data);
     }
     setLoadingBlogs(false);
@@ -225,11 +248,14 @@ const AdminDashboard = () => {
           </TabsContent>
 
           <TabsContent value="tours">
-            <ToursTab 
-              tours={tours} 
-              loading={loadingTours} 
-              onRefresh={fetchTours} 
-            />
+            <div className="space-y-6">
+              <SupabaseConnectionTest />
+              <ToursTab 
+                tours={tours} 
+                loading={loadingTours} 
+                onRefresh={fetchTours} 
+              />
+            </div>
           </TabsContent>
 
           <TabsContent value="blogs">

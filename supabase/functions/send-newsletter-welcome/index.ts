@@ -1,7 +1,7 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
-import { Resend } from "https://esm.sh/resend@2.0.0";
 
-const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
+const BREVO_API_KEY = Deno.env.get("BREVO_API_KEY");
+const BREVO_API_URL = "https://api.brevo.com/v3/smtp/email";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -22,11 +22,14 @@ const handler = async (req: Request): Promise<Response> => {
     console.log("New newsletter subscriber:", email);
 
     // Send welcome email to subscriber
-    const welcomeEmail = await resend.emails.send({
-      from: "EIK Africa Experience <onboarding@resend.dev>",
-      to: [email],
+    const welcomeEmailPayload = {
+      sender: { 
+        name: "EIK Africa Experience", 
+        email: "noreply@eikafricaexperience.com" 
+      },
+      to: [{ email }],
       subject: "Welcome to EIK Africa Experience! 🦁",
-      html: `
+      htmlContent: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
           <div style="background: #1a472a; padding: 30px; text-align: center;">
             <h1 style="color: #fff; margin: 0;">Welcome to Our Safari Family!</h1>
@@ -57,16 +60,38 @@ const handler = async (req: Request): Promise<Response> => {
           </div>
         </div>
       `,
+    };
+
+    const welcomeResponse = await fetch(BREVO_API_URL, {
+      method: "POST",
+      headers: {
+        "accept": "application/json",
+        "api-key": BREVO_API_KEY!,
+        "content-type": "application/json",
+      },
+      body: JSON.stringify(welcomeEmailPayload),
     });
 
-    console.log("Welcome email sent:", welcomeEmail);
+    if (!welcomeResponse.ok) {
+      const error = await welcomeResponse.text();
+      console.error("Welcome email failed:", error);
+      throw new Error(`Failed to send welcome email: ${error}`);
+    }
+
+    console.log("Welcome email sent successfully");
 
     // Notify admin of new subscriber
-    const adminNotification = await resend.emails.send({
-      from: "EIK Africa Experience <onboarding@resend.dev>",
-      to: ["inquiries@eikafricaexperience.com"],
+    const adminNotificationPayload = {
+      sender: { 
+        name: "EIK Africa Experience", 
+        email: "noreply@eikafricaexperience.com" 
+      },
+      to: [{ 
+        email: "inquiries@eikafricaexperience.com", 
+        name: "EIK Africa Team" 
+      }],
       subject: `New Newsletter Subscriber: ${email}`,
-      html: `
+      htmlContent: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
           <div style="background: #1a472a; padding: 20px; text-align: center;">
             <h1 style="color: #fff; margin: 0;">New Newsletter Subscriber</h1>
@@ -77,9 +102,25 @@ const handler = async (req: Request): Promise<Response> => {
           </div>
         </div>
       `,
+    };
+
+    const adminResponse = await fetch(BREVO_API_URL, {
+      method: "POST",
+      headers: {
+        "accept": "application/json",
+        "api-key": BREVO_API_KEY!,
+        "content-type": "application/json",
+      },
+      body: JSON.stringify(adminNotificationPayload),
     });
 
-    console.log("Admin notification sent:", adminNotification);
+    if (!adminResponse.ok) {
+      const error = await adminResponse.text();
+      console.error("Admin notification failed:", error);
+      throw new Error(`Failed to send admin notification: ${error}`);
+    }
+
+    console.log("Admin notification sent successfully");
 
     return new Response(JSON.stringify({ success: true }), {
       status: 200,

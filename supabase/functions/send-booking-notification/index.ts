@@ -1,7 +1,7 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
-import { Resend } from "https://esm.sh/resend@2.0.0";
 
-const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
+const BREVO_API_KEY = Deno.env.get("BREVO_API_KEY");
+const BREVO_API_URL = "https://api.brevo.com/v3/smtp/email";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -21,6 +21,7 @@ interface BookingRequest {
   duration?: string;
   adults?: string;
   children?: string;
+  infants?: string;
   budget?: string;
   services?: string[];
   specialRequirements?: string;
@@ -37,11 +38,17 @@ const handler = async (req: Request): Promise<Response> => {
     console.log("Received booking inquiry:", data);
 
     // Send notification to business
-    const businessEmail = await resend.emails.send({
-      from: "EIK Africa Experience <onboarding@resend.dev>",
-      to: ["inquiries@eikafricaexperience.com"],
+    const businessEmailPayload = {
+      sender: { 
+        name: "EIK Africa Experience", 
+        email: "noreply@eikafricaexperience.com" 
+      },
+      to: [{ 
+        email: "inquiries@eikafricaexperience.com", 
+        name: "EIK Africa Team" 
+      }],
       subject: `New Booking Inquiry from ${data.firstName} ${data.lastName}`,
-      html: `
+      htmlContent: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
           <div style="background: #1a472a; padding: 20px; text-align: center;">
             <h1 style="color: #fff; margin: 0;">New Booking Inquiry</h1>
@@ -59,7 +66,7 @@ const handler = async (req: Request): Promise<Response> => {
             <p><strong>Destination:</strong> ${data.destination || "Not specified"}</p>
             <p><strong>Travel Date:</strong> ${data.travelDate || "Flexible"}</p>
             <p><strong>Duration:</strong> ${data.duration || "Not specified"}</p>
-            <p><strong>Travelers:</strong> ${data.adults || 1} Adults, ${data.children || 0} Children</p>
+            <p><strong>Travelers:</strong> ${data.adults || 1} Adults, ${data.children || 0} Children (3-11 yrs), ${data.infants || 0} Infants (0-2 yrs)</p>
             <p><strong>Budget:</strong> ${data.budget || "Not specified"}</p>
             <p><strong>Services:</strong> ${data.services?.join(", ") || "None selected"}</p>
             
@@ -72,16 +79,38 @@ const handler = async (req: Request): Promise<Response> => {
           </div>
         </div>
       `,
+    };
+
+    const businessResponse = await fetch(BREVO_API_URL, {
+      method: "POST",
+      headers: {
+        "accept": "application/json",
+        "api-key": BREVO_API_KEY!,
+        "content-type": "application/json",
+      },
+      body: JSON.stringify(businessEmailPayload),
     });
 
-    console.log("Business notification sent:", businessEmail);
+    if (!businessResponse.ok) {
+      const error = await businessResponse.text();
+      console.error("Business email failed:", error);
+      throw new Error(`Failed to send business notification: ${error}`);
+    }
+
+    console.log("Business notification sent successfully");
 
     // Send confirmation to customer
-    const customerEmail = await resend.emails.send({
-      from: "EIK Africa Experience <onboarding@resend.dev>",
-      to: [data.email],
+    const customerEmailPayload = {
+      sender: { 
+        name: "EIK Africa Experience", 
+        email: "noreply@eikafricaexperience.com" 
+      },
+      to: [{ 
+        email: data.email, 
+        name: `${data.firstName} ${data.lastName}` 
+      }],
       subject: "We've Received Your Safari Inquiry! 🌍",
-      html: `
+      htmlContent: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
           <div style="background: #1a472a; padding: 30px; text-align: center;">
             <h1 style="color: #fff; margin: 0;">Thank You, ${data.firstName}!</h1>
@@ -95,7 +124,7 @@ const handler = async (req: Request): Promise<Response> => {
               <h2 style="color: #1a472a; margin-top: 0;">Your Inquiry Summary</h2>
               <p><strong>Tour Interest:</strong> ${data.tourName || "Custom Itinerary"}</p>
               <p><strong>Travel Date:</strong> ${data.travelDate || "Flexible"}</p>
-              <p><strong>Travelers:</strong> ${data.adults || 1} Adults, ${data.children || 0} Children</p>
+              <p><strong>Travelers:</strong> ${data.adults || 1} Adults, ${data.children || 0} Children (3-11 yrs), ${data.infants || 0} Infants (0-2 yrs)</p>
               <p><strong>Budget:</strong> ${data.budget || "Not specified"}</p>
             </div>
             
@@ -112,9 +141,25 @@ const handler = async (req: Request): Promise<Response> => {
           </div>
         </div>
       `,
+    };
+
+    const customerResponse = await fetch(BREVO_API_URL, {
+      method: "POST",
+      headers: {
+        "accept": "application/json",
+        "api-key": BREVO_API_KEY!,
+        "content-type": "application/json",
+      },
+      body: JSON.stringify(customerEmailPayload),
     });
 
-    console.log("Customer confirmation sent:", customerEmail);
+    if (!customerResponse.ok) {
+      const error = await customerResponse.text();
+      console.error("Customer email failed:", error);
+      throw new Error(`Failed to send customer confirmation: ${error}`);
+    }
+
+    console.log("Customer confirmation sent successfully");
 
     return new Response(JSON.stringify({ success: true }), {
       status: 200,

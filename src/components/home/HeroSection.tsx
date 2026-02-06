@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import heroElephant from "@/assets/hero-elephant.jpg";
 
 export function HeroSection() {
+
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
       {/* Background Image */}
@@ -23,12 +24,11 @@ export function HeroSection() {
             Unforgettable African Journeys Begin Here
           </h1>
           <p className="text-lg md:text-xl text-white/90 max-w-2xl mx-auto">
-            Discover the magic of Africa with our expertly curated safaris, beach getaways, 
-            and cultural experiences. Let us create your dream adventure.
+            Discover the magic of Africa with our expertly curated safaris, beach getaways, and cultural experiences. Let us create your dream adventure.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
             <Button size="lg" asChild className="text-lg px-8">
-              <Link to="/experiences">Explore Tours</Link>
+              <Link to="/experiences">Explore Experiences</Link>
             </Button>
             <Button 
               size="lg" 
@@ -36,7 +36,7 @@ export function HeroSection() {
               asChild 
               className="text-lg px-8 bg-transparent border-white text-white hover:bg-white hover:text-foreground"
             >
-              <Link to="/booking">Plan Your Trip</Link>
+              <Link to="/booking">Book Now</Link>
             </Button>
           </div>
         </div>

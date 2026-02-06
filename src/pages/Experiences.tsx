@@ -176,7 +176,7 @@ const Experiences = () => {
               Our Tours
             </p>
             <h2 className="font-display text-3xl md:text-4xl font-bold">
-              Safari Packages
+              Experiences Packages
             </h2>
           </div>
 

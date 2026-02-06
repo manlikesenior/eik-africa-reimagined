@@ -8,7 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Card, CardContent } from "@/components/ui/card";
-import { Phone, Mail, MapPin, Clock, CheckCircle } from "lucide-react";
+import { Phone, Mail, MapPin, Clock, CheckCircle, User, Users, Baby } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import bookingHeroImage from "@/assets/booking-hero.jpg";
@@ -73,6 +73,7 @@ const Booking = () => {
     duration: "",
     adults: "2",
     children: "0",
+    infants: "0",
     budget: "",
     specialRequirements: "",
     message: ""
@@ -147,6 +148,7 @@ const Booking = () => {
           duration: formData.duration,
           adults: formData.adults,
           children: formData.children,
+          infants: formData.infants,
           budget: formData.budget,
           services: selectedServices,
           specialRequirements: formData.specialRequirements,
@@ -389,26 +391,67 @@ const Booking = () => {
                       </Select>
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="adults">Number of Adults</Label>
-                      <Input
-                        id="adults"
-                        name="adults"
-                        type="number"
-                        min="1"
-                        value={formData.adults}
-                        onChange={handleInputChange}
-                      />
+                      <Label htmlFor="adults" className="flex items-center gap-2">
+                        <User className="w-4 h-4" />
+                        Adults
+                      </Label>
+                      <Select 
+                        value={formData.adults} 
+                        onValueChange={(v) => setFormData({ ...formData, adults: v })}
+                      >
+                        <SelectTrigger id="adults">
+                          <SelectValue placeholder="Select adults" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {[...Array(10)].map((_, i) => (
+                            <SelectItem key={i + 1} value={String(i + 1)}>
+                              {i + 1} {i + 1 === 1 ? 'Adult' : 'Adults'}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="children">Number of Children</Label>
-                      <Input
-                        id="children"
-                        name="children"
-                        type="number"
-                        min="0"
-                        value={formData.children}
-                        onChange={handleInputChange}
-                      />
+                      <Label htmlFor="children" className="flex items-center gap-2">
+                        <Users className="w-4 h-4" />
+                        Children (3-11 yrs)
+                      </Label>
+                      <Select 
+                        value={formData.children} 
+                        onValueChange={(v) => setFormData({ ...formData, children: v })}
+                      >
+                        <SelectTrigger id="children">
+                          <SelectValue placeholder="Select children" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {[...Array(11)].map((_, i) => (
+                            <SelectItem key={i} value={String(i)}>
+                              {i} {i === 1 ? 'Child' : 'Children'}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="infants" className="flex items-center gap-2">
+                        <Baby className="w-4 h-4" />
+                        Infants (0-2 yrs)
+                      </Label>
+                      <Select 
+                        value={formData.infants} 
+                        onValueChange={(v) => setFormData({ ...formData, infants: v })}
+                      >
+                        <SelectTrigger id="infants">
+                          <SelectValue placeholder="Select infants" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {[...Array(6)].map((_, i) => (
+                            <SelectItem key={i} value={String(i)}>
+                              {i} {i === 1 ? 'Infant' : 'Infants'}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
                     </div>
                   </div>
                 </div>

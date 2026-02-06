@@ -4,7 +4,6 @@ import { Menu, Phone, Mail, Home, Info, Briefcase, BookOpen, Calendar, MapPin } 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger, SheetHeader, SheetTitle } from "@/components/ui/sheet";
-import { CountryMegaMenu } from "./CountryMegaMenu";
 import logo from "@/assets/logo.png";
 
 const navLinks = [
@@ -14,6 +13,14 @@ const navLinks = [
   { href: "/blog", label: "Blog", icon: BookOpen },
   { href: "/about", label: "About Us", icon: Info },
   { href: "/booking", label: "Book Now", icon: Calendar },
+];
+
+const countryLinks = [
+  { name: "Kenya", href: "/experiences?country=Kenya" },
+  { name: "Uganda", href: "/experiences?country=Uganda" },
+  { name: "Tanzania", href: "/experiences?country=Tanzania" },
+  { name: "Rwanda", href: "/experiences?country=Rwanda" },
+  { name: "South Africa", href: "/experiences?country=South Africa" },
 ];
 
 export function Header() {
@@ -79,7 +86,22 @@ export function Header() {
           </Link>
 
           {/* Desktop Country Navigation - Center */}
-          <CountryMegaMenu />
+          <nav className="hidden lg:flex items-center gap-1">
+            {countryLinks.map((country) => (
+              <Link
+                key={country.name}
+                to={country.href}
+                className={cn(
+                  "px-4 py-2 text-sm font-semibold uppercase tracking-wide transition-colors",
+                  location.pathname === "/experiences" && new URLSearchParams(window.location.search).get("country") === country.name
+                    ? "text-primary"
+                    : "text-foreground hover:text-primary"
+                )}
+              >
+                {country.name}
+              </Link>
+            ))}
+          </nav>
 
           {/* Book Now Button + Hamburger - Right */}
           <div className="flex items-center gap-4">
