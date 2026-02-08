@@ -13,6 +13,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Plus, Pencil, Trash2, Eye, EyeOff, Star, StarOff, X, Image } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import ImageUpload from "./ImageUpload";
+import MultiImageUpload from "./MultiImageUpload";
 import { sanitizeInput, stripHtml } from "@/lib/sanitize";
 import { trackEvent } from "@/lib/analytics";
 import { captureError, addBreadcrumb } from "@/lib/sentry";
@@ -732,45 +733,13 @@ const ToursTab = ({ tours, loading, onRefresh }: ToursTabProps) => {
                 </TabsContent>
 
                 <TabsContent value="gallery" className="space-y-4 mt-4">
-                  <div>
-                    <Label className="text-base font-semibold">Gallery Images</Label>
-                    <p className="text-sm text-muted-foreground mb-4">Add additional images for the tour gallery</p>
-                  </div>
-
-                  <div className="space-y-4">
-                    <ImageUpload 
-                      value={newGalleryUrl} 
-                      onChange={addGalleryImage} 
-                      label="Add Gallery Image"
-                      folder="tours/gallery"
-                    />
-                  </div>
-
-                  {formData.gallery.length > 0 && (
-                    <div className="grid grid-cols-3 gap-4 mt-4">
-                      {formData.gallery.map((url, index) => (
-                        <div key={index} className="relative group">
-                          <img src={url} alt={`Gallery ${index + 1}`} className="w-full h-24 object-cover rounded-lg" />
-                          <button
-                            type="button"
-                            onClick={() => removeGalleryImage(index)}
-                            className="absolute top-1 right-1 bg-destructive text-destructive-foreground rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
-                          >
-                            <X className="w-3 h-3" />
-                          </button>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-
-                  {formData.gallery.length === 0 && (
-                    <Card>
-                      <CardContent className="py-8 text-center">
-                        <Image className="w-8 h-8 mx-auto text-muted-foreground mb-2" />
-                        <p className="text-muted-foreground">No gallery images added yet.</p>
-                      </CardContent>
-                    </Card>
-                  )}
+                  <MultiImageUpload
+                    values={formData.gallery}
+                    onChange={(urls) => setFormData({ ...formData, gallery: urls })}
+                    label="Gallery Images"
+                    folder="tours/gallery"
+                    maxFiles={20}
+                  />
                 </TabsContent>
               </Tabs>
 
