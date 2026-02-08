@@ -13,6 +13,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Plus, Pencil, Trash2, Eye, EyeOff, Star, StarOff, X, Image } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import ImageUpload from "./ImageUpload";
+import { sanitizeInput, stripHtml } from "@/lib/sanitize";
+import { trackEvent } from "@/lib/analytics";
+import { captureError, addBreadcrumb } from "@/lib/sentry";
 
 interface ItineraryDay {
   day: number;
@@ -215,25 +218,27 @@ const ToursTab = ({ tours, loading, onRefresh }: ToursTabProps) => {
     }
     
     const tourData = {
-      title: formData.title,
+      title: sanitizeInput(formData.title),
       slug: formData.slug || formData.title.toLowerCase().replace(/\s+/g, "-"),
-      description: formData.description || null,
-      overview: formData.overview || null,
+      description: formData.description ? sanitizeInput(formData.description) : null,
+      overview: formData.overview ? sanitizeInput(formData.overview) : null,
       duration: formData.duration,
       price: formData.price ? parseFloat(formData.price) : null,
-      price_note: formData.price_note || null,
+      price_note: formData.price_note ? sanitizeInput(formData.price_note) : null,
       image_url: formData.image_url || null,
       gallery: formData.gallery.length > 0 ? formData.gallery : null,
       is_published: formData.is_published,
       is_featured: formData.is_featured,
-      destinations: formData.destinations ? formData.destinations.split(",").map(d => d.trim()) : null,
-      highlights: formData.highlights ? formData.highlights.split("\n").filter(h => h.trim()) : null,
-      inclusions: formData.inclusions ? formData.inclusions.split("\n").filter(i => i.trim()) : null,
-      exclusions: formData.exclusions ? formData.exclusions.split("\n").filter(e => e.trim()) : null,
+      destinations: formData.destinations ? formData.destinations.split(",").map(d => sanitizeInput(d.trim())) : null,
+      highlights: formData.highlights ? formData.highlights.split("\n").filter(h => h.trim()).map(h => sanitizeInput(h)) : null,
+      inclusions: formData.inclusions ? formData.inclusions.split("\n").filter(i => i.trim()).map(i => sanitizeInput(i)) : null,
+      exclusions: formData.exclusions ? formData.exclusions.split("\n").filter(e => e.trim()).map(e => sanitizeInput(e)) : null,
       category: formData.category || null,
       itinerary: formData.itinerary.length > 0 ? JSON.parse(JSON.stringify(formData.itinerary)) : null,
       pricing_tiers: Object.keys(pricingTiers).length > 0 ? JSON.parse(JSON.stringify(pricingTiers)) : null
     };
+
+    addBreadcrumb(`Tour ${editingTour ? "update" : "create"} started`, "admin", { title: tourData.title });
 
     if (editingTour) {
       const { error } = await supabase
@@ -242,8 +247,10 @@ const ToursTab = ({ tours, loading, onRefresh }: ToursTabProps) => {
         .eq("id", editingTour.id);
 
       if (error) {
+        captureError(new Error(`Failed to update tour: ${error.message}`), { tourId: editingTour.id });
         toast({ title: "Error updating tour", variant: "destructive" });
       } else {
+        trackEvent("admin_tour_updated", { tour_title: tourData.title, tour_slug: tourData.slug });
         toast({ title: "Tour updated successfully" });
         setIsDialogOpen(false);
         resetForm();
@@ -255,8 +262,10 @@ const ToursTab = ({ tours, loading, onRefresh }: ToursTabProps) => {
         .insert([tourData]);
 
       if (error) {
+        captureError(new Error(`Failed to create tour: ${error.message}`));
         toast({ title: "Error creating tour", variant: "destructive" });
       } else {
+        trackEvent("admin_tour_created", { tour_title: tourData.title, tour_slug: tourData.slug });
         toast({ title: "Tour created successfully" });
         setIsDialogOpen(false);
         resetForm();
@@ -268,10 +277,13 @@ const ToursTab = ({ tours, loading, onRefresh }: ToursTabProps) => {
   const handleDelete = async (id: string) => {
     if (!confirm("Are you sure you want to delete this tour?")) return;
     
+    addBreadcrumb("Tour delete initiated", "admin", { tourId: id });
     const { error } = await supabase.from("tours").delete().eq("id", id);
     if (error) {
+      captureError(new Error(`Failed to delete tour: ${error.message}`), { tourId: id });
       toast({ title: "Error deleting tour", variant: "destructive" });
     } else {
+      trackEvent("admin_tour_deleted", { tour_id: id });
       toast({ title: "Tour deleted" });
       onRefresh();
     }

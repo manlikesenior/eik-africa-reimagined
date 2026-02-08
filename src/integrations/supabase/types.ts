@@ -205,6 +205,86 @@ export type Database = {
         }
         Relationships: []
       }
+      email_templates: {
+        Row: {
+          id: string
+          name: string
+          description: string | null
+          subject: string
+          html_template: string
+          is_active: boolean | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          name: string
+          description?: string | null
+          subject: string
+          html_template: string
+          is_active?: boolean | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          name?: string
+          description?: string | null
+          subject?: string
+          html_template?: string
+          is_active?: boolean | null
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      email_logs: {
+        Row: {
+          id: string
+          template_name: string | null
+          recipient_email: string
+          recipient_name: string | null
+          subject: string
+          status: string
+          error_message: string | null
+          booking_inquiry_id: string | null
+          sent_at: string | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          template_name?: string | null
+          recipient_email: string
+          recipient_name?: string | null
+          subject: string
+          status?: string
+          error_message?: string | null
+          booking_inquiry_id?: string | null
+          sent_at?: string | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          template_name?: string | null
+          recipient_email?: string
+          recipient_name?: string | null
+          subject?: string
+          status?: string
+          error_message?: string | null
+          booking_inquiry_id?: string | null
+          sent_at?: string | null
+          created_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "email_logs_booking_inquiry_id_fkey"
+            columns: ["booking_inquiry_id"]
+            isOneToOne: false
+            referencedRelation: "booking_inquiries"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
       tours: {
         Row: {
           category: string | null

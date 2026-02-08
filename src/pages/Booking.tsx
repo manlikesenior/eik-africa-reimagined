@@ -11,6 +11,10 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Phone, Mail, MapPin, Clock, CheckCircle, User, Users, Baby } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { useRecaptcha, RECAPTCHA_ACTIONS } from "@/lib/recaptcha";
+import { sanitizeInput, sanitizeEmail, sanitizePhone } from "@/lib/sanitize";
+import { Analytics } from "@/lib/analytics";
+import { SEO } from "@/components/SEO";
 import bookingHeroImage from "@/assets/booking-hero.jpg";
 
 const services = [
@@ -50,6 +54,7 @@ const Booking = () => {
   const preselectedTour = searchParams.get("tour");
   const preselectedTier = searchParams.get("tier") as "silver" | "gold" | "platinum" | null;
   const { toast } = useToast();
+  const { executeRecaptcha, isRecaptchaReady } = useRecaptcha();
 
   const [tours, setTours] = useState<Tour[]>([]);
   const [loading, setLoading] = useState(false);
@@ -107,27 +112,53 @@ const Booking = () => {
     setLoading(true);
 
     try {
+      // Execute reCAPTCHA verification
+      const recaptchaToken = await executeRecaptcha(RECAPTCHA_ACTIONS.BOOKING);
+      if (!recaptchaToken) {
+        toast({
+          title: "Security Check Failed",
+          description: "Please try again. If the issue persists, refresh the page.",
+          variant: "destructive"
+        });
+        setLoading(false);
+        return;
+      }
+
+      // Sanitize inputs
+      const sanitizedEmail = sanitizeEmail(formData.email);
+      const sanitizedPhone = sanitizePhone(formData.phone);
+      
+      if (!sanitizedEmail) {
+        toast({
+          title: "Invalid Email",
+          description: "Please enter a valid email address.",
+          variant: "destructive"
+        });
+        setLoading(false);
+        return;
+      }
+
       // Find tour title
       const selectedTour = tours.find(t => t.slug === formData.tourSlug);
 
       // Insert booking inquiry
       const { error: insertError } = await supabase.from("booking_inquiries").insert({
-        first_name: formData.firstName,
-        last_name: formData.lastName,
-        email: formData.email,
-        phone: formData.phone,
-        country: formData.country,
-        tour_name: selectedTour?.title || formData.tourSlug,
+        first_name: sanitizeInput(formData.firstName),
+        last_name: sanitizeInput(formData.lastName),
+        email: sanitizedEmail,
+        phone: sanitizedPhone,
+        country: sanitizeInput(formData.country),
+        tour_name: selectedTour?.title || sanitizeInput(formData.tourSlug),
         travel_theme: formData.travelTheme,
-        destination: formData.destination,
+        destination: sanitizeInput(formData.destination),
         travel_date: formData.travelDate || null,
         duration: formData.duration,
         adults: parseInt(formData.adults) || 1,
         children: parseInt(formData.children) || 0,
         budget: formData.budget,
         services: selectedServices,
-        special_requirements: formData.specialRequirements,
-        message: formData.message,
+        special_requirements: sanitizeInput(formData.specialRequirements),
+        message: sanitizeInput(formData.message),
         selected_tier: formData.tourSlug ? selectedTier : null
       });
 
@@ -158,6 +189,14 @@ const Booking = () => {
       });
 
       setSubmitted(true);
+      
+      // Track successful booking
+      Analytics.bookingSubmitted(
+        selectedTour?.title || formData.tourSlug,
+        formData.tourSlug ? selectedTier : undefined,
+        formData.budget
+      );
+
       toast({
         title: "Booking Inquiry Sent!",
         description: "We'll get back to you within 24 hours.",
@@ -204,6 +243,11 @@ const Booking = () => {
 
   return (
     <Layout>
+      <SEO
+        title="Book Your African Adventure"
+        description="Start planning your dream African safari. Fill out our booking form and our travel experts will create your perfect itinerary."
+        keywords={["book safari", "African tour booking", "safari reservation"]}
+      />
       {/* Hero */}
       <section className="relative py-20 overflow-hidden">
         <img 
@@ -532,6 +576,29 @@ const Booking = () => {
                 >
                   {loading ? "Submitting..." : "Submit Inquiry"}
                 </Button>
+
+                {/* reCAPTCHA Notice */}
+                <p className="text-xs text-muted-foreground mt-4">
+                  This site is protected by reCAPTCHA and the Google{" "}
+                  <a 
+                    href="https://policies.google.com/privacy" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="underline hover:text-foreground"
+                  >
+                    Privacy Policy
+                  </a>{" "}
+                  and{" "}
+                  <a 
+                    href="https://policies.google.com/terms" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="underline hover:text-foreground"
+                  >
+                    Terms of Service
+                  </a>{" "}
+                  apply.
+                </p>
               </form>
             </div>
 

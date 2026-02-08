@@ -12,6 +12,9 @@ import { Plus, Pencil, Trash2, Eye, EyeOff } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import ImageUpload from "./ImageUpload";
 import RichTextEditor from "./RichTextEditor";
+import { sanitizeRichContent, sanitizeInput, stripHtml } from "@/lib/sanitize";
+import { trackEvent } from "@/lib/analytics";
+import { captureError, addBreadcrumb } from "@/lib/sentry";
 
 interface Blog {
   id: string;
@@ -84,18 +87,24 @@ const BlogsTab = ({ blogs, loading, onRefresh }: BlogsTabProps) => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
+    // Sanitize content before saving
+    const sanitizedContent = formData.content ? sanitizeRichContent(formData.content) : null;
+    const sanitizedExcerpt = formData.excerpt ? sanitizeInput(formData.excerpt) : null;
+    
     const blogData = {
-      title: formData.title,
+      title: sanitizeInput(formData.title),
       slug: formData.slug || formData.title.toLowerCase().replace(/\s+/g, "-"),
-      excerpt: formData.excerpt || null,
-      content: formData.content || null,
+      excerpt: sanitizedExcerpt,
+      content: sanitizedContent,
       featured_image: formData.featured_image || null,
-      author: formData.author || null,
-      category: formData.category || null,
-      tags: formData.tags ? formData.tags.split(",").map(t => t.trim()) : null,
+      author: formData.author ? sanitizeInput(formData.author) : null,
+      category: formData.category ? sanitizeInput(formData.category) : null,
+      tags: formData.tags ? formData.tags.split(",").map(t => sanitizeInput(t.trim())) : null,
       is_published: formData.is_published,
       published_at: formData.is_published ? new Date().toISOString() : null
     };
+
+    addBreadcrumb(`Blog ${editingBlog ? "update" : "create"} started`, "admin", { title: blogData.title });
 
     if (editingBlog) {
       const { error } = await supabase
@@ -104,8 +113,10 @@ const BlogsTab = ({ blogs, loading, onRefresh }: BlogsTabProps) => {
         .eq("id", editingBlog.id);
 
       if (error) {
+        captureError(new Error(`Failed to update blog: ${error.message}`), { blogId: editingBlog.id });
         toast({ title: "Error updating blog", variant: "destructive" });
       } else {
+        trackEvent("admin_blog_updated", { blog_title: blogData.title });
         toast({ title: "Blog updated successfully" });
         setIsDialogOpen(false);
         resetForm();
@@ -117,8 +128,10 @@ const BlogsTab = ({ blogs, loading, onRefresh }: BlogsTabProps) => {
         .insert([blogData]);
 
       if (error) {
+        captureError(new Error(`Failed to create blog: ${error.message}`));
         toast({ title: "Error creating blog", variant: "destructive" });
       } else {
+        trackEvent("admin_blog_created", { blog_title: blogData.title });
         toast({ title: "Blog created successfully" });
         setIsDialogOpen(false);
         resetForm();
@@ -130,10 +143,13 @@ const BlogsTab = ({ blogs, loading, onRefresh }: BlogsTabProps) => {
   const handleDelete = async (id: string) => {
     if (!confirm("Are you sure you want to delete this blog post?")) return;
     
+    addBreadcrumb("Blog delete initiated", "admin", { blogId: id });
     const { error } = await supabase.from("blogs").delete().eq("id", id);
     if (error) {
+      captureError(new Error(`Failed to delete blog: ${error.message}`), { blogId: id });
       toast({ title: "Error deleting blog", variant: "destructive" });
     } else {
+      trackEvent("admin_blog_deleted", { blog_id: id });
       toast({ title: "Blog deleted" });
       onRefresh();
     }

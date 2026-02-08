@@ -6,6 +6,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
 import { PricingTierSelector, PricingTiers } from "@/components/tours/PricingTierSelector";
+import { SEO, TourStructuredData } from "@/components/SEO";
+import { Analytics } from "@/lib/analytics";
 
 interface ItineraryDay {
   day: number;
@@ -87,6 +89,9 @@ const TourDetail = () => {
         if (related) {
           setRelatedTours(related);
         }
+
+        // Track tour view
+        Analytics.tourViewed(slug, parsedTour.title);
       }
       setLoading(false);
     }
@@ -120,6 +125,27 @@ const TourDetail = () => {
 
   return (
     <Layout>
+      {/* SEO Meta Tags */}
+      <SEO
+        title={tour.title}
+        description={tour.description || tour.overview?.slice(0, 160)}
+        image={tour.image_url}
+        keywords={[
+          ...(tour.destinations || []),
+          tour.duration,
+          "safari tour",
+          "African adventure"
+        ]}
+      />
+      <TourStructuredData
+        name={tour.title}
+        description={tour.description || tour.overview}
+        image={tour.image_url}
+        price={tour.price || undefined}
+        duration={tour.duration}
+        destinations={tour.destinations || []}
+      />
+
       {/* Hero */}
       <section className="relative py-24 overflow-hidden">
         <div 

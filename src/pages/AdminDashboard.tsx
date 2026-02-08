@@ -7,10 +7,14 @@ import AdminHeader from "@/components/admin/AdminHeader";
 import InquiriesTab from "@/components/admin/InquiriesTab";
 import ToursTab from "@/components/admin/ToursTab";
 import BlogsTab from "@/components/admin/BlogsTab";
-import SubscribersTab from "@/components/admin/SubscribersTab";
+import EmailLogsTab from "@/components/admin/EmailLogsTab";
+import TemplatesTab from "@/components/admin/TemplatesTab";
 import { SupabaseConnectionTest } from "@/components/admin/SupabaseConnectionTest";
-import { MessageSquare, Map, FileText, Mail } from "lucide-react";
+import { MessageSquare, Map, FileText, Mail, Settings } from "lucide-react";
 import type { Json } from "@/integrations/supabase/types";
+import { SEO } from "@/components/SEO";
+import { Analytics, identifyUser } from "@/lib/analytics";
+import { captureError, setUser, addBreadcrumb } from "@/lib/sentry";
 
 interface BookingInquiry {
   id: string;
@@ -65,30 +69,49 @@ interface Blog {
   created_at: string;
 }
 
-interface Subscriber {
+interface EmailLog {
   id: string;
-  email: string;
-  first_name: string | null;
-  last_name: string | null;
-  is_subscribed: boolean | null;
-  source: string | null;
-  subscribed_at: string;
+  template_name: string | null;
+  recipient_email: string;
+  recipient_name: string | null;
+  subject: string;
+  status: "pending" | "sent" | "failed" | "bounced";
+  error_message: string | null;
+  booking_inquiry_id: string | null;
+  sent_at: string | null;
+  created_at: string;
+}
+
+interface EmailTemplate {
+  id: string;
+  name: string;
+  description: string | null;
+  subject: string;
+  html_template: string;
+  is_active: boolean | null;
+  created_at: string;
+  updated_at: string;
 }
 
 const AdminDashboard = () => {
   const [inquiries, setInquiries] = useState<BookingInquiry[]>([]);
   const [tours, setTours] = useState<Tour[]>([]);
   const [blogs, setBlogs] = useState<Blog[]>([]);
-  const [subscribers, setSubscribers] = useState<Subscriber[]>([]);
+  const [emailLogs, setEmailLogs] = useState<EmailLog[]>([]);
+  const [emailTemplates, setEmailTemplates] = useState<EmailTemplate[]>([]);
   const [loadingInquiries, setLoadingInquiries] = useState(true);
   const [loadingTours, setLoadingTours] = useState(true);
   const [loadingBlogs, setLoadingBlogs] = useState(true);
-  const [loadingSubscribers, setLoadingSubscribers] = useState(true);
+  const [loadingEmailLogs, setLoadingEmailLogs] = useState(true);
+  const [loadingTemplates, setLoadingTemplates] = useState(true);
   const navigate = useNavigate();
   const { toast } = useToast();
 
   useEffect(() => {
     checkAuth();
+    // Track admin dashboard view
+    Analytics.pageView("admin_dashboard");
+    addBreadcrumb("Admin dashboard loaded", "navigation");
   }, []);
 
   const checkAuth = async () => {
@@ -110,11 +133,16 @@ const AdminDashboard = () => {
       return;
     }
 
+    // Set user context for analytics and error tracking
+    identifyUser(session.user.id, { email: session.user.email });
+    setUser({ id: session.user.id, email: session.user.email || undefined });
+
     // Fetch all data
     fetchInquiries();
     fetchTours();
     fetchBlogs();
-    fetchSubscribers();
+    fetchEmailLogs();
+    fetchEmailTemplates();
   };
 
   const fetchInquiries = async () => {
@@ -125,6 +153,7 @@ const AdminDashboard = () => {
 
     if (error) {
       console.error("Error fetching inquiries:", error);
+      captureError(new Error(`Failed to fetch inquiries: ${error.message}`), { context: "admin_dashboard" });
       toast({
         title: "Failed to fetch inquiries",
         description: error.message,
@@ -144,6 +173,7 @@ const AdminDashboard = () => {
 
     if (error) {
       console.error("Error fetching tours:", error);
+      captureError(new Error(`Failed to fetch tours: ${error.message}`), { context: "admin_dashboard" });
       toast({
         title: "Failed to fetch tours",
         description: error.message,
@@ -164,6 +194,7 @@ const AdminDashboard = () => {
 
     if (error) {
       console.error("Error fetching blogs:", error);
+      captureError(new Error(`Failed to fetch blogs: ${error.message}`), { context: "admin_dashboard" });
       toast({
         title: "Failed to fetch blogs",
         description: error.message,
@@ -175,16 +206,34 @@ const AdminDashboard = () => {
     setLoadingBlogs(false);
   };
 
-  const fetchSubscribers = async () => {
+  const fetchEmailLogs = async () => {
     const { data, error } = await supabase
-      .from("email_subscribers")
+      .from("email_logs")
       .select("*")
-      .order("subscribed_at", { ascending: false });
+      .order("created_at", { ascending: false });
 
-    if (!error && data) {
-      setSubscribers(data);
+    if (error) {
+      console.error("Error fetching email logs:", error);
+      // Table may not exist yet if migration hasn't run
+    } else if (data) {
+      setEmailLogs(data as EmailLog[]);
     }
-    setLoadingSubscribers(false);
+    setLoadingEmailLogs(false);
+  };
+
+  const fetchEmailTemplates = async () => {
+    const { data, error } = await supabase
+      .from("email_templates")
+      .select("*")
+      .order("name", { ascending: true });
+
+    if (error) {
+      console.error("Error fetching email templates:", error);
+      // Table may not exist yet if migration hasn't run
+    } else if (data) {
+      setEmailTemplates(data as EmailTemplate[]);
+    }
+    setLoadingTemplates(false);
   };
 
   const updateInquiryStatus = async (id: string, status: string) => {
@@ -200,6 +249,8 @@ const AdminDashboard = () => {
   };
 
   const handleLogout = async () => {
+    addBreadcrumb("Admin logged out", "auth");
+    setUser(null);
     await supabase.auth.signOut();
     navigate("/admin");
   };
@@ -208,6 +259,11 @@ const AdminDashboard = () => {
 
   return (
     <div className="min-h-screen bg-secondary">
+      <SEO 
+        title="Admin Dashboard" 
+        description="Manage tours, blogs, and inquiries"
+        noIndex={true}
+      />
       <AdminHeader onLogout={handleLogout} />
 
       <main className="container mx-auto px-4 py-8">
@@ -217,7 +273,7 @@ const AdminDashboard = () => {
         </div>
 
         <Tabs defaultValue="inquiries" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-4 lg:w-auto lg:inline-grid">
+          <TabsList className="grid w-full grid-cols-5 lg:w-auto lg:inline-grid">
             <TabsTrigger value="inquiries" className="flex items-center gap-2">
               <MessageSquare className="w-4 h-4" />
               <span className="hidden sm:inline">Inquiries</span>
@@ -233,9 +289,13 @@ const AdminDashboard = () => {
               <FileText className="w-4 h-4" />
               <span className="hidden sm:inline">Blogs</span>
             </TabsTrigger>
-            <TabsTrigger value="subscribers" className="flex items-center gap-2">
+            <TabsTrigger value="emails" className="flex items-center gap-2">
               <Mail className="w-4 h-4" />
-              <span className="hidden sm:inline">Subscribers</span>
+              <span className="hidden sm:inline">Emails</span>
+            </TabsTrigger>
+            <TabsTrigger value="templates" className="flex items-center gap-2">
+              <Settings className="w-4 h-4" />
+              <span className="hidden sm:inline">Templates</span>
             </TabsTrigger>
           </TabsList>
 
@@ -266,11 +326,19 @@ const AdminDashboard = () => {
             />
           </TabsContent>
 
-          <TabsContent value="subscribers">
-            <SubscribersTab 
-              subscribers={subscribers} 
-              loading={loadingSubscribers} 
-              onRefresh={fetchSubscribers} 
+          <TabsContent value="emails">
+            <EmailLogsTab
+              logs={emailLogs}
+              loading={loadingEmailLogs}
+              onRefresh={fetchEmailLogs}
+            />
+          </TabsContent>
+
+          <TabsContent value="templates">
+            <TemplatesTab
+              templates={emailTemplates}
+              loading={loadingTemplates}
+              onRefresh={fetchEmailTemplates}
             />
           </TabsContent>
         </Tabs>

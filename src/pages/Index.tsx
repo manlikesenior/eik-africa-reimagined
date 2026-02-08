@@ -6,10 +6,13 @@ import { FeaturedTours } from "@/components/home/FeaturedTours";
 import { ReviewsSection } from "@/components/home/ReviewsSection";
 import { FAQSection } from "@/components/home/FAQSection";
 import { CTASection } from "@/components/home/CTASection";
+import { SEO, OrganizationStructuredData } from "@/components/SEO";
 
 const Index = () => {
   return (
     <Layout>
+      <SEO />
+      <OrganizationStructuredData />
       <HeroSection />
       <WelcomeSection />
       <ServicesSection />
