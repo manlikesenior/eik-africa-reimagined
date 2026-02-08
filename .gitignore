@@ -1,3 +1,11 @@
+# Environment files
+.env
+.env.*
+!.env.example
+
+# Supabase temp files
+supabase/.temp/
+
 # Logs
 logs
 *.log

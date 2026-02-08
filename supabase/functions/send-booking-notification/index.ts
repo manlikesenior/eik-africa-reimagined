@@ -189,12 +189,12 @@ const handler = async (req: Request): Promise<Response> => {
     // Send notification to business
     const businessEmailPayload = {
       sender: { 
-        name: "EIK Africa Experience", 
+        name: "Eika Africa Experience", 
         email: "noreply@eikafricaexperience.com" 
       },
       to: [{ 
         email: "inquiries@eikafricaexperience.com", 
-        name: "EIK Africa Team" 
+        name: "Eika Africa Team" 
       }],
       subject: adminSubject,
       htmlContent: adminHtml,
@@ -213,17 +213,17 @@ const handler = async (req: Request): Promise<Response> => {
     if (!businessResponse.ok) {
       const error = await businessResponse.text();
       console.error("Business email failed:", error);
-      await logEmail(supabase, "booking_admin", "inquiries@eikafricaexperience.com", "EIK Africa Team", adminSubject, "failed", data.inquiryId, error);
+      await logEmail(supabase, "booking_admin", "inquiries@eikafricaexperience.com", "Eika Africa Team", adminSubject, "failed", data.inquiryId, error);
       throw new Error(`Failed to send business notification: ${error}`);
     }
 
     console.log("Business notification sent successfully");
-    await logEmail(supabase, "booking_admin", "inquiries@eikafricaexperience.com", "EIK Africa Team", adminSubject, "sent", data.inquiryId);
+    await logEmail(supabase, "booking_admin", "inquiries@eikafricaexperience.com", "Eika Africa Team", adminSubject, "sent", data.inquiryId);
 
     // Send confirmation to customer
     const customerEmailPayload = {
       sender: { 
-        name: "EIK Africa Experience", 
+        name: "Eika Africa Experience", 
         email: "noreply@eikafricaexperience.com" 
       },
       to: [{ 
@@ -301,7 +301,7 @@ function getDefaultAdminTemplate(data: Record<string, string>): string {
         <p><strong>Message:</strong> ${data.message}</p>
       </div>
       <div style="background: #1a472a; padding: 15px; text-align: center;">
-        <p style="color: #fff; margin: 0; font-size: 12px;">EIK Africa Experience - Your Gateway to African Adventures</p>
+        <p style="color: #fff; margin: 0; font-size: 12px;">Eika Africa Experience - Your Gateway to African Adventures</p>
       </div>
     </div>
   `;
@@ -335,7 +335,7 @@ function getDefaultCustomerTemplate(data: Record<string, string>): string {
       </div>
       <div style="background: #1a472a; padding: 20px; text-align: center;">
         <p style="color: #c9a227; margin: 0 0 10px 0;">Best regards,</p>
-        <p style="color: #fff; margin: 0; font-weight: bold;">The EIK Africa Experience Team</p>
+        <p style="color: #fff; margin: 0; font-weight: bold;">The Eika Africa Experience Team</p>
         <p style="color: #fff; margin-top: 15px; font-size: 12px;">Nairobi, Kenya</p>
       </div>
     </div>

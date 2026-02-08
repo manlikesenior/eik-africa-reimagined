@@ -14,7 +14,7 @@ Your email system has been migrated from Resend to Brevo. Follow these steps to 
 2. Go to **Settings** → **SMTP & API**
 3. Click on **API Keys** tab
 4. Click **Generate a new API key**
-5. Name it: `EIK Africa Production`
+5. Name it: `Eika Africa Production`
 6. Copy the API key (you'll only see it once!)
 
 ## Step 3: Set API Key in Supabase
@@ -44,7 +44,7 @@ To send emails from your domain (`@eikafricaexperience.com`), you need to verify
 2. Click **Add a sender**
 3. Enter:
    - Email: `noreply@eikafricaexperience.com`
-   - Name: `EIK Africa Experience`
+   - Name: `Eika Africa Experience`
 4. Click **Add**
 5. Brevo will send a verification email
 6. Click the verification link in that email

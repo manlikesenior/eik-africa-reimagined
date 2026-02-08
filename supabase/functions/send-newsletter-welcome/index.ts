@@ -24,11 +24,11 @@ const handler = async (req: Request): Promise<Response> => {
     // Send welcome email to subscriber
     const welcomeEmailPayload = {
       sender: { 
-        name: "EIK Africa Experience", 
+        name: "Eika Africa Experience", 
         email: "noreply@eikafricaexperience.com" 
       },
       to: [{ email }],
-      subject: "Welcome to EIK Africa Experience! 🦁",
+      subject: "Welcome to Eika Africa Experience! 🦁",
       htmlContent: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
           <div style="background: #1a472a; padding: 30px; text-align: center;">
@@ -36,7 +36,7 @@ const handler = async (req: Request): Promise<Response> => {
             <p style="color: #c9a227; margin-top: 10px;">Your African Adventure Begins Here</p>
           </div>
           <div style="padding: 30px; background: #fff;">
-            <p style="font-size: 16px; line-height: 1.6;">Thank you for subscribing to the EIK Africa Experience newsletter!</p>
+            <p style="font-size: 16px; line-height: 1.6;">Thank you for subscribing to the Eika Africa Experience newsletter!</p>
             <p style="font-size: 16px; line-height: 1.6;">You'll now receive:</p>
             <ul style="font-size: 16px; line-height: 1.8;">
               <li>🌍 Exclusive travel tips and destination guides</li>
@@ -55,7 +55,7 @@ const handler = async (req: Request): Promise<Response> => {
           </div>
           <div style="background: #1a472a; padding: 20px; text-align: center;">
             <p style="color: #c9a227; margin: 0 0 10px 0;">Karibu Sana!</p>
-            <p style="color: #fff; margin: 0; font-weight: bold;">The EIK Africa Experience Team</p>
+            <p style="color: #fff; margin: 0; font-weight: bold;">The Eika Africa Experience Team</p>
             <p style="color: #fff; margin-top: 15px; font-size: 12px;">Nairobi, Kenya | +254 116 735 102</p>
           </div>
         </div>
@@ -83,12 +83,12 @@ const handler = async (req: Request): Promise<Response> => {
     // Notify admin of new subscriber
     const adminNotificationPayload = {
       sender: { 
-        name: "EIK Africa Experience", 
+        name: "Eika Africa Experience", 
         email: "noreply@eikafricaexperience.com" 
       },
       to: [{ 
         email: "inquiries@eikafricaexperience.com", 
-        name: "EIK Africa Team" 
+        name: "Eika Africa Team" 
       }],
       subject: `New Newsletter Subscriber: ${email}`,
       htmlContent: `

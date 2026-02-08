@@ -127,7 +127,7 @@ INSERT INTO public.email_templates (name, description, subject, html_template) V
     <p><strong>Message:</strong> {{message}}</p>
   </div>
   <div style="background: #1a472a; padding: 15px; text-align: center;">
-    <p style="color: #fff; margin: 0; font-size: 12px;">EIK Africa Experience - Your Gateway to African Adventures</p>
+    <p style="color: #fff; margin: 0; font-size: 12px;">Eika Africa Experience - Your Gateway to African Adventures</p>
   </div>
 </div>'
 ),
@@ -160,7 +160,7 @@ INSERT INTO public.email_templates (name, description, subject, html_template) V
   </div>
   <div style="background: #1a472a; padding: 20px; text-align: center;">
     <p style="color: #c9a227; margin: 0 0 10px 0;">Best regards,</p>
-    <p style="color: #fff; margin: 0; font-weight: bold;">The EIK Africa Experience Team</p>
+    <p style="color: #fff; margin: 0; font-weight: bold;">The Eika Africa Experience Team</p>
     <p style="color: #fff; margin-top: 15px; font-size: 12px;">Nairobi, Kenya</p>
   </div>
 </div>'
