@@ -19,18 +19,9 @@ A travel booking platform that helps people discover and book authentic African 
 - shadcn/ui component library
 - Supabase for database, auth, and storage
 
-## Getting Started
-
-Clone the repo, install dependencies, and start the dev server:
-
-npm install
-npm run dev
-
-The app runs on localhost:8080 by default.
-
 ## Deployment
 
-Works with any static hosting that supports Vite apps. Currently deployed on Vercel.
+ Currently deployed on Vercel.
 
 ## Project Structure
 
