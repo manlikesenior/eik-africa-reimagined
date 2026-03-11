@@ -1,16 +1,27 @@
 /**
  * Script to extract tours from Africa Safari Trips and store in Supabase
  * Usage: node scripts/extract-tours.js
+ * 
+ * Required environment variables (in .env.local):
+ *   SUPABASE_URL - Your Supabase project URL
+ *   SUPABASE_SERVICE_ROLE_KEY - Service role key (from Supabase Dashboard > Settings > API)
  */
 
+import 'dotenv/config';
 import * as cheerio from 'cheerio';
 import axios from 'axios';
 import { createClient } from '@supabase/supabase-js';
 import path from 'path';
 import fs from 'fs/promises';
 
-const SUPABASE_URL = "https://uxdiipqxujzbzfizbhic.supabase.co";
-const SUPABASE_SERVICE_ROLE_KEY = "REDACTED_KEY";
+const SUPABASE_URL = process.env.SUPABASE_URL;
+const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
+  console.error('❌ Missing required environment variables: SUPABASE_URL and/or SUPABASE_SERVICE_ROLE_KEY');
+  console.error('   Please ensure these are set in your .env.local file');
+  process.exit(1);
+}
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 

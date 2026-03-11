@@ -1,10 +1,22 @@
 /**
  * Script to seed the 12-day Uganda tour
  * Usage: node scripts/seed-uganda-tour.js
+ * 
+ * Required environment variables (in .env.local):
+ *   SUPABASE_URL - Your Supabase project URL
+ *   SUPABASE_SERVICE_ROLE_KEY - Service role key (from Supabase Dashboard > Settings > API)
  */
 
-const SUPABASE_URL = "https://uxdiipqxujzbzfizbhic.supabase.co";
-const SUPABASE_SERVICE_ROLE_KEY = "REDACTED_KEY";
+import 'dotenv/config';
+
+const SUPABASE_URL = process.env.SUPABASE_URL;
+const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
+  console.error('❌ Missing required environment variables: SUPABASE_URL and/or SUPABASE_SERVICE_ROLE_KEY');
+  console.error('   Please ensure these are set in your .env.local file');
+  process.exit(1);
+}
 
 const ugandaTour = {
   title: "12 Days Uganda: Exploring the Wild West",
